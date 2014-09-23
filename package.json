@@ -1,0 +1,28 @@
+{
+  "name": "svgexport",
+  "version": "0.1.3",
+  "description": "",
+  "author": "Ali Shakiba",
+  "keywords": [
+    "svg",
+    "export",
+    "rasterize",
+    "png",
+    "jpeg",
+    "jpg"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shakiba/svgexport.git"
+  },
+  "dependencies": {
+    "phantomjs": ">= 0.2.0",
+    "async": "~0.9.0"
+  },
+  "main": "svgexport.js",
+  "bin": {
+    "svgexport" : "svgexport-cli.js"
+  },
+  "preferGlobal": "true"
+}

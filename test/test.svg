@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" version="1.1" width="16" height="16">
+
+  <defs>
+    <radialGradient id="gradient" r="1">
+      <stop offset="0%" stop-color="#555" />
+      <stop offset="100%" stop-color="#444" />
+    </radialGradient>
+  </defs>
+
+  <rect width="16" height="16" x="0" y="0" style="fill:url(#gradient);fill-opacity:1;stroke:none" />
+  <rect width="12" height="2" x="2" y="0" style="fill:red;fill-opacity:1;stroke:none" />
+  <rect width="12" height="2" x="2" y="14" style="fill:green;fill-opacity:1;stroke:none" />
+  <rect width="2" height="12" x="0" y="2" style="fill:blue;fill-opacity:1;stroke:none" />
+  <rect width="2" height="12" x="14" y="2" style="fill:yellow;fill-opacity:1;stroke:none" />
+
+  <rect width="2" height="2" x="7" y="7" style="fill:gray;fill-opacity:1;stroke:none" />
+  <rect width="1" height="1" x="7.5" y="7.5" style="fill:white;fill-opacity:1;stroke:none" />
+</svg>
