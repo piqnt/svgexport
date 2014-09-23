@@ -38,8 +38,8 @@ if (!webpage) {
       c.scale = 1;
       var param = dest.shift();
       var match;
-      if (param && (match = /^(\d+)\%$/i.exec(param))) {
-        quality = match[1];
+      if (match = /^(\d+)\%$/i.exec(param)) {
+        c.quality = match[1];
         param = dest.shift();
       }
       if (match = /^(\d+):(\d+)$/i.exec(param)) {
