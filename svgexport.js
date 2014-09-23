@@ -36,29 +36,24 @@ if (!webpage) {
       c.format = /.(jpeg|jpg)$/.test(c.file) ? 'jpeg' : 'png';
       c.quality = 100;
       c.scale = 1;
-      var param = dest.shift();
-      var match;
-      if (match = /^(\d+)\%$/i.exec(param)) {
-        c.quality = match[1];
-        param = dest.shift();
-      }
-      if (match = /^(\d+):(\d+)$/i.exec(param)) {
-        c.left = 0;
-        c.top = 0;
-        c.width = match[1];
-        c.height = match[2];
-      } else if (match = /^(\d+):(\d+):(\d+):(\d+)$/i.exec(param)) {
-        c.left = match[1];
-        c.top = match[2];
-        c.width = match[3];
-        c.height = match[4];
-      } else {
-        console.log("Invalid output!");
-        return;
-      }
-      param = dest.shift();
-      if (param) {
-        if (match = /^(\d+)x$/i.exec(param)) {
+      var param, match;
+      while (param = dest.shift()) {
+        if (match = /^(\d+)\%$/i.exec(param)) {
+          c.quality = match[1];
+
+        } else if (!c.width && (match = /^(\d+):(\d+)$/i.exec(param))) {
+          c.left = 0;
+          c.top = 0;
+          c.width = match[1];
+          c.height = match[2];
+        } else if (!c.width
+            && (match = /^(\d+):(\d+):(\d+):(\d+)$/i.exec(param))) {
+          c.left = match[1];
+          c.top = match[2];
+          c.width = match[3];
+          c.height = match[4];
+
+        } else if (match = /^(\d+)x$/i.exec(param)) {
           c.scale = match[1];
           c.left *= c.scale;
           c.top *= c.scale;
@@ -78,6 +73,7 @@ if (!webpage) {
           c.top *= c.scale;
           c.width *= c.scale;
           c.height = height;
+
         } else if (match = /^(\d+):(\d+)$/i.exec(param)) {
           var height = match[1];
           var width = match[2];
@@ -88,6 +84,10 @@ if (!webpage) {
           c.top = c.top * c.scale + (c.height * c.scale - height) / 2;
           c.width = width;
           c.height = height;
+
+        } else {
+          console.log("Invalid output!");
+          return;
         }
       }
 

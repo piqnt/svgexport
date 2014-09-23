@@ -12,4 +12,4 @@ npm install svgexport -g
 svgexport datafile
 ```
 
-See test/test.json for datafile example.
+See [test.json](test/test.json) for datafile example, it can be either a JSON file or a Node module which exports similar content.

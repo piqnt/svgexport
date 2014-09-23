@@ -1,6 +1,7 @@
-[ {
+{
   "src" : "test.svg",
   "dest" : [
+    "../exported/16.png 16:16",
     "../exported/32h.png 16:16 32h",
     "../exported/32w.png 16:16 32w",
     "../exported/2x.png 16:16 2x",
@@ -8,7 +9,7 @@
     "../exported/64-32.png 16:16 64:32",
     "../exported/32-64.png 16:16 32:64",
     "../exported/offset.png 8:8:8:8 32:32",
-    "../exported/jpeg-low.png 1% 16:16 320:320",
-    "../exported/jpeg-high.jpg 100% 16:16 320:320"
+    "../exported/jpeg-low.jpg 1% 16:16 320:320",
+    "../exported/jpeg-high.jpg 99% 16:16 320:320"
   ]
-} ]
+}
