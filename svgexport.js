@@ -23,21 +23,19 @@ if (!webpage) {
     data = [ data ];
   }
   data.forEach(function(entry) {
-    if (!Array.isArray(entry.dest)) {
-      entry.dest = [ entry.dest ];
-    }
-    entry.dest.forEach(function(dest) {
-      dest = dest.split(/\s+/);
+    var input = entry.src || entry.input;
+    var outputs = entry.dest || entry.output;
+    outputs = Array.isArray(outputs) ? outputs : [ outputs ];
+    outputs.forEach(function(output) {
+      output = output.split(/\s+/);
       var c = {};
-      c.src = entry.src;
-      c.src = path.resolve(base, c.src);
-      c.file = dest.shift();
-      c.file = path.resolve(base, c.file);
+      c.src = path.resolve(base, input);
+      c.file = path.resolve(base, output.shift());
       c.format = /.(jpeg|jpg)$/.test(c.file) ? 'jpeg' : 'png';
       c.quality = 100;
       c.scale = 1;
       var param, match;
-      while (param = dest.shift()) {
+      while (param = output.shift()) {
         if (match = /^(\d+)\%$/i.exec(param)) {
           c.quality = match[1];
 
