@@ -8,14 +8,49 @@ if (!webpage) {
 
   var path = require('path');
 
-  if (process.argv.length !== 3) {
-    console.error('Usage: svgexport datafile');
+  if (process.argv.length < 3) {
+    var fs = require('fs');
+
+    var readme = path.resolve(__dirname, 'README.md');
+    readme = fs.readFileSync(readme, 'utf8');
+    console.log();
+    if (!readme) {
+      console.log('Invalid usage, see docs!');
+    } else {
+      console.log('Usage:');
+      var print = 0;
+      readme.split(/\n/).map(function(line) {
+        if (print == 1 && /```/.test(line)) {
+          print = false;
+        }
+        (print == 1) && console.log('    ' + line);
+        if (/```usage/.test(line)) {
+          print = 1;
+        }
+      });
+    }
+    console.log();
     process.exit();
+
   }
 
-  var data = path.resolve(process.cwd(), process.argv[2]);
-  var base = path.dirname(data);
-  data = require(data);
+  var base, data;
+  if (process.argv.length === 3) {
+    data = path.resolve(process.cwd(), process.argv[2]);
+    base = path.dirname(data);
+    try {
+      data = require(data);
+    } catch (e) {
+      console.error('Error: Unable to load ' + data);
+      process.exit();
+    }
+  } else {
+    base = process.cwd();
+    data = {
+      input : process.argv[2],
+      output : process.argv.slice(3).join(' ')
+    };
+  }
 
   var commands = [];
 
@@ -38,6 +73,9 @@ if (!webpage) {
       while (param = output.shift()) {
         if (match = /^(\d+)\%$/i.exec(param)) {
           c.quality = match[1];
+
+        } else if (match = /^(png|jpeg|jpg)$/i.exec(param)) {
+          c.format = match[1];
 
         } else if (!c.width && (match = /^(\d+):(\d+)$/i.exec(param))) {
           c.left = 0;
