@@ -54,80 +54,88 @@ if (!webpage) {
 
   var commands = [];
 
-  if (!Array.isArray(data)) {
-    data = [ data ];
-  }
+  data = Array.isArray(data) ? data : [ data ];
   data.forEach(function(entry) {
+
     var input = entry.src || entry.input;
+    input = {
+      file : /^\S+/.exec(input)[0],
+      params : input
+    };
+
     var outputs = entry.dest || entry.output;
     outputs = Array.isArray(outputs) ? outputs : [ outputs ];
     outputs.forEach(function(output) {
-      output = output.split(/\s+/);
-      var c = {};
-      c.src = path.resolve(base, input);
-      c.file = path.resolve(base, output.shift());
-      c.format = /.(jpeg|jpg)$/.test(c.file) ? 'jpeg' : 'png';
-      c.quality = 100;
-      c.scale = 1;
-      var param, match;
-      while (param = output.shift()) {
-        if (match = /^(\d+)\%$/i.exec(param)) {
-          c.quality = match[1];
 
-        } else if (match = /^(png|jpeg|jpg)$/i.exec(param)) {
-          c.format = match[1];
+      output = {
+        file : /^\S+/.exec(output)[0],
+        params : output
+      };
 
-        } else if (!c.width && (match = /^(\d+):(\d+)$/i.exec(param))) {
-          c.left = 0;
-          c.top = 0;
-          c.width = match[1];
-          c.height = match[2];
-        } else if (!c.width
-            && (match = /^(\d+):(\d+):(\d+):(\d+)$/i.exec(param))) {
-          c.left = match[1];
-          c.top = match[2];
-          c.width = match[3];
-          c.height = match[4];
+      var cmd = {
+        input : path.resolve(base, input.file),
+        scale : 1,
+        quality : 100
+      };
 
-        } else if (match = /^(\d+)x$/i.exec(param)) {
-          c.scale = match[1];
-          c.left *= c.scale;
-          c.top *= c.scale;
-          c.width *= c.scale;
-          c.height *= c.scale;
-        } else if (match = /^(\d+)w$/i.exec(param)) {
-          var width = match[1];
-          c.scale = width / c.width;
-          c.left *= c.scale;
-          c.top *= c.scale;
-          c.width = width;
-          c.height *= c.scale;
-        } else if (match = /^(\d+)h$/i.exec(param)) {
-          var height = match[1];
-          c.scale = height / c.height;
-          c.left *= c.scale;
-          c.top *= c.scale;
-          c.width *= c.scale;
-          c.height = height;
+      cmd.output = path.resolve(base, output.file);
+      cmd.format = /.(jpeg|jpg)$/.test(cmd.output) ? 'jpeg' : 'png';
 
-        } else if (match = /^(\d+):(\d+)$/i.exec(param)) {
-          var height = match[1];
-          var width = match[2];
-          var scalex = width / c.width;
-          var scaley = height / c.height;
-          c.scale = Math.max(scalex, scaley);
-          c.left = c.left * c.scale + (c.width * c.scale - width) / 2;
-          c.top = c.top * c.scale + (c.height * c.scale - height) / 2;
-          c.width = width;
-          c.height = height;
+      var params = new Params(input.params + ' ' + output.params);
 
-        } else {
-          console.log("Invalid output!");
-          return;
-        }
-      }
+      params.first(/^(\d+)\%$/i, function(match) {
+        cmd.quality = match[1];
+      });
 
-      commands.push(c);
+      params.first(/^(png|jpeg|jpg)$/i, function(match) {
+        cmd.format = match[1];
+      });
+
+      params.last(/^(\d+):(\d+)$/i, function(match) {
+        cmd.left = 0;
+        cmd.top = 0;
+        cmd.width = match[1];
+        cmd.height = match[2];
+      });
+
+      params.last(/^((\d+):(\d+):)?(\d+):(\d+)$/i, function(match) {
+        var left = match[2] || 0;
+        var top = match[3] || 0;
+        var width = match[4];
+        var height = match[5];
+
+        var scalex = cmd.width / width;
+        var scaley = cmd.height / height;
+        cmd.scale = Math.max(scalex, scaley);
+        cmd.left = left * cmd.scale + (width * cmd.scale - cmd.width) / 2;
+        cmd.top = top * cmd.scale + (height * cmd.scale - cmd.height) / 2;
+
+      }) || params.last(/^(\d+)x$/i, function(match) {
+        cmd.scale = match[1];
+        cmd.left *= cmd.scale;
+        cmd.top *= cmd.scale;
+        cmd.width *= cmd.scale;
+        cmd.height *= cmd.scale;
+
+      }) || params.last(/^(\d+)w$/i, function(match) {
+        var width = match[1];
+        cmd.scale = width / cmd.width;
+        cmd.left *= cmd.scale;
+        cmd.top *= cmd.scale;
+        cmd.width = width;
+        cmd.height *= cmd.scale;
+
+      }) || params.last(/^(\d+)h$/i, function(match) {
+        var height = match[1];
+        cmd.scale = height / cmd.height;
+        cmd.left *= cmd.scale;
+        cmd.top *= cmd.scale;
+        cmd.width *= cmd.scale;
+        cmd.height = height;
+
+      });
+
+      commands.push(cmd);
     });
   });
 
@@ -165,9 +173,9 @@ if (!webpage) {
 
     async.each(commands, function(cmd, done) {
       var page = webpage.create();
-      page.open(cmd.src, function(status) {
+      page.open(cmd.input, function(status) {
         if (status !== 'success') {
-          console.error('Error: Unable to load ' + cmd.src + ' (' + status
+          console.error('Error: Unable to load ' + cmd.input + ' (' + status
               + ')');
           done();
           return;
@@ -176,7 +184,7 @@ if (!webpage) {
         page.clipRect = cmd;
         page.zoomFactor = cmd.scale;
         setTimeout(function() {
-          page.render(cmd.file, {
+          page.render(cmd.output, {
             format : cmd.format,
             quality : cmd.quality
           });
@@ -194,9 +202,42 @@ if (!webpage) {
   }
 }
 
+function Params(cmd) {
+  var params = cmd.split(/\s+/);
+
+  this.first = function(regex, callback) {
+    for (var i = 0; i < params.length; i++) {
+      var param = params[i];
+      var match = regex.exec(param);
+      if (match) {
+        if (!callback(match)) {
+          params.splice(i, 1);
+          i--;
+        }
+        return true;
+      }
+    }
+    return false;
+  };
+
+  this.last = function(regex, callback) {
+    for (var i = params.length - 1; i >= 0; i--) {
+      var param = params[i];
+      var match = regex.exec(param);
+      if (match) {
+        if (!callback(match)) {
+          params.splice(i, 1);
+        }
+        return true;
+      }
+    }
+    return false;
+  };
+}
+
 function strcmd(cmd) {
-  return cmd.src + ' ' + cmd.file + ' ' + cmd.format + ' ' + cmd.quality + '%'
-      + ' ' + cmd.scale + 'x' + ' ' + cmd.left / cmd.scale + ':'
+  return cmd.input + ' ' + cmd.output + ' ' + cmd.format + ' ' + cmd.quality
+      + '%' + ' ' + cmd.scale + 'x' + ' ' + cmd.left / cmd.scale + ':'
       + cmd.top / cmd.scale + ':' + cmd.width / cmd.scale + ':'
       + cmd.height / cmd.scale + ' ' + cmd.width + ':' + cmd.height;
 }
