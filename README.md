@@ -31,5 +31,5 @@ output size:    <scale>x|<width>w|<height>h|<width>:<height>
 
 If <format> is missing, it will be inferred from <output file> extension or defaults to png.
 
-If <output size> is specified as <width>:<height> and its ration doesn't match <input viewbox>, it will be centered.
+If <output size> is specified as <width>:<height> and its aspect ratio doesn't match <input viewbox>, it will be centered.
 ```
