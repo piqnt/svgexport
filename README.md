@@ -13,10 +13,10 @@ npm install svgexport -g
 svgexport <datafile>
 svgexport <input file> <output file> [<format>] [<quality>%] <input viewbox> [<output size>]
 
-format:         png|jpeg|jpg
-quality:        1-100
-input viewbox:  [<left>:<top>]:<width>:<height>
-output size:    <scale>x|<width>w|<height>h|<width>:<height>
+<format>:         png|jpeg|jpg
+<quality>:        1-100
+<input viewbox>:  [<left>:<top>:]<width>:<height>
+<output size>:    <scale>x|<width>w|<height>h|<width>:<height>
 
 <datafile> content:
     [ {
