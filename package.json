@@ -1,15 +1,22 @@
 {
   "name": "svgexport",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "",
   "author": "Ali Shakiba",
   "keywords": [
     "svg",
     "export",
     "rasterize",
+    "converter",
     "png",
     "jpeg",
-    "jpg"
+    "jpg",
+    "pdf",
+    "cli",
+    "command line",
+    "inkscape",
+    "illustrator",
+    "coreldraw"
   ],
   "license": "MIT",
   "repository": {

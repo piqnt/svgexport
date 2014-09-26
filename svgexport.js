@@ -1,16 +1,28 @@
-var webpage = null;
-try {
-  webpage = require('webpage');
-} catch (e) {
+if (typeof phantom !== 'undefined') {
+  try {
+    if (phantom.args.length !== 1) {
+      console.error('Error: Invalid commands!');
+      phantom.exit();
+    }
+    exec(JSON.parse(phantom.args[0]), function(err) {
+      err && console.log(err);
+      phantom.exit();
+    });
+  } catch (e) {
+    console.error(e);
+    phantom.exit();
+  }
+} else {
+  module.exports.render = render;
+  module.exports.cli = cli;
+  module.exports.exec = send;
 }
 
-if (!webpage) {
-
+function cli() {
   var path = require('path');
+  var fs = require('fs');
 
   if (process.argv.length < 3) {
-    var fs = require('fs');
-
     var readme = path.resolve(__dirname, 'README.md');
     readme = fs.readFileSync(readme, 'utf8');
     console.log();
@@ -30,26 +42,41 @@ if (!webpage) {
       });
     }
     console.log();
-    process.exit();
 
+  } else if (process.argv.length === 3) {
+    render(path.resolve(process.cwd(), process.argv[2]), function(err) {
+      err && console.log(err);
+    });
+
+  } else {
+    render({
+      input : process.argv[2],
+      output : process.argv.slice(3).join(' '),
+      base : process.cwd()
+    }, function(err) {
+      err && console.log(err);
+    });
   }
+}
 
-  var base, data;
-  if (process.argv.length === 3) {
-    data = path.resolve(process.cwd(), process.argv[2]);
+function render(data, done) {
+  var path = require('path');
+
+  var base;
+  if (typeof data === 'string') {
+    data = path.resolve(process.cwd(), data);
     base = path.dirname(data);
     try {
       data = require(data);
     } catch (e) {
-      console.error('Error: Unable to load ' + data);
-      process.exit();
+      return done('Error: Unable to load ' + data);
     }
   } else {
+    base = data.base || process.cwd();
+  }
+
+  if (!base) {
     base = process.cwd();
-    data = {
-      input : process.argv[2],
-      output : process.argv.slice(3).join(' ')
-    };
   }
 
   var commands = [];
@@ -75,11 +102,11 @@ if (!webpage) {
       var cmd = {
         input : path.resolve(base, input.file),
         scale : 1,
+        format : 'png',
         quality : 100
       };
 
       cmd.output = path.resolve(base, output.file);
-      cmd.format = /.(jpeg|jpg)$/.test(cmd.output) ? 'jpeg' : 'png';
 
       var params = new Params(input.params + ' ' + output.params);
 
@@ -87,9 +114,16 @@ if (!webpage) {
         cmd.quality = match[1];
       });
 
-      params.first(/^(png|jpeg|jpg)$/i, function(match) {
+      params.first(/^(jpeg|jpg|pdf)$/i, function(match) {
         cmd.format = match[1];
+      }, function() {
+        var ext = /.(jpeg|jpg|pdf)$/.exec(cmd.output);
+        if (ext && ext[1]) {
+          cmd.format = ext[1];
+        }
       });
+
+      cmd.format = cmd.format.toLowerCase().replace('jpg', 'jpeg');
 
       params.last(/^(\d+):(\d+)$/i, function(match) {
         cmd.left = 0;
@@ -139,73 +173,67 @@ if (!webpage) {
     });
   });
 
-  commands = JSON.stringify(commands);
+  send(commands, done);
+}
 
+function send(commands, done) {
+  commands = JSON.stringify(commands);
+  var path = require('path');
   var execFile = require('child_process').execFile;
   var phantom = path.resolve(__dirname,
       './node_modules/phantomjs/bin/phantomjs');
   execFile(process.execPath, [ phantom, __filename, commands ], function(err,
       stdout, stderr) {
-    if (err) {
-      console.log(err);
-    } else if (stdout.length > 0) {
+    if (stdout.length > 0)
       console.log(stdout.toString().trim());
-    } else if (stderr.length > 0) {
+    if (stderr.length > 0)
       console.log(stderr.toString().trim());
-    }
+    done && done(err);
   });
+}
 
-} else {
+function exec(commands, done) {
 
-  try {
-    if (phantom.args.length !== 1) {
-      console.error('Error: Invalid commands!');
-      phantom.exit();
-    }
+  var webpage = require('webpage');
+  var async = require('async');
 
-    var async = require('async');
+  commands = Array.isArray(commands) ? commands : [ commands ];
 
-    var commands = JSON.parse(phantom.args[0]);
+  async.each(commands, function(cmd, done) {
+    var page = webpage.create();
+    page.open(cmd.input, function(status) {
+      if (status !== 'success') {
+        var err = 'Error: Unable to load ' + cmd.input + ' (' + status + ')';
+        done && done(err);
+        return;
+      }
 
-    if (!Array.isArray(commands)) {
-      commands = [ commands ];
-    }
+      page.clipRect = cmd;
+      page.zoomFactor = cmd.scale;
+      page.paperSize = {
+        width : cmd.width / 150 + 'in',
+        height : cmd.height / 150 + 'in'
+      };
 
-    async.each(commands, function(cmd, done) {
-      var page = webpage.create();
-      page.open(cmd.input, function(status) {
-        if (status !== 'success') {
-          console.error('Error: Unable to load ' + cmd.input + ' (' + status
-              + ')');
-          done();
-          return;
-        }
-
-        page.clipRect = cmd;
-        page.zoomFactor = cmd.scale;
-        setTimeout(function() {
-          page.render(cmd.output, {
-            format : cmd.format,
-            quality : cmd.quality
-          });
-          console.log(strcmd(cmd));
-          done();
-        }, 0);
-      });
-    }, function(err) {
-      err && console.log(err);
-      phantom.exit();
+      setTimeout(function() {
+        page.render(cmd.output, {
+          format : cmd.format,
+          quality : cmd.quality
+        });
+        console.log(strcmd(cmd));
+        done && done();
+      }, 0);
     });
-  } catch (e) {
-    console.error(e);
-    phantom.exit();
-  }
+
+  }, function(err) {
+    done && done(err);
+  });
 }
 
 function Params(cmd) {
   var params = cmd.split(/\s+/);
 
-  this.first = function(regex, callback) {
+  this.first = function(regex, callback, fallback) {
     for (var i = 0; i < params.length; i++) {
       var param = params[i];
       var match = regex.exec(param);
@@ -217,10 +245,11 @@ function Params(cmd) {
         return true;
       }
     }
+    fallback && fallback();
     return false;
   };
 
-  this.last = function(regex, callback) {
+  this.last = function(regex, callback, fallback) {
     for (var i = params.length - 1; i >= 0; i--) {
       var param = params[i];
       var match = regex.exec(param);
@@ -231,6 +260,7 @@ function Params(cmd) {
         return true;
       }
     }
+    fallback && fallback();
     return false;
   };
 }

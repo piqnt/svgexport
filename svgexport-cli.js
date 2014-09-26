@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require('svgexport');
+require('svgexport').cli();
