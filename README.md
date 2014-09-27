@@ -31,6 +31,10 @@ svgexport <datafile>
                    ]
                  }, ...]
 
+Examples:        svgexport input.svg output.png 24:24 4x
+                 svgexport input.svg output.jpeg 80% 24:24 48:64
+                 svgexport input.svg output.pdf 24:24 3x A3 landscape
+
 If format is not specified, it will be inferred from output file extension or
 defaults to "png".
 
