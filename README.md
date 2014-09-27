@@ -11,9 +11,10 @@ npm install svgexport -g
 
 Usage
 ```usage
+svgexport <input file> <output file> <options>
 svgexport <datafile>
-svgexport <input file> <output file> [<format>] [<quality>%] <input viewbox> [<output size>]
 
+<options>        [<format>] [<quality>%] <input viewbox> [<output size>]
 <format>         png|jpeg|jpg
 <quality>        1-100
 <input viewbox>  [<left>:<top>:]<width>:<height>
@@ -21,20 +22,24 @@ svgexport <input file> <output file> [<format>] [<quality>%] <input viewbox> [<o
 
 <datafile>       A JSON file with following content:
                  [ {
-                   "input" : "<input file> <input viewbox>",
+                   "input" : "<input file> <options>",
                    "output": [
-                     "<output file> [<format>] [<quality>%] <input viewbox> [output size]",
+                     "<output file> <options>",
                      ...
                    ]
                  }, ...]
 
-<input viewbox> is required only once and the last one is effective.
+If format is not specified, it will be inferred from output file extension or
+defaults to "png".
 
-If <format> is missing, it will be inferred from <output file> extension or defaults to png.
+If output size is specified as width:height and its aspect ratio doesn\'t match
+input viewbox, viewbox will be centered and cropped.
 
-If <output size> is specified as <width>:<height> and its aspect ratio doesn't match <input viewbox>, viewbox will be centered and cropped.
+Instead of JSON file, a Node module which exports same content can be provided
+as datafile.
 
-For datafile, instead of JSON file you can provide a Node module which exports same content.
+In datafile, options specified after output file are merged with and take 
+precedence over options specified after output file.
 ```
 
 #### Node Module
@@ -51,7 +56,7 @@ var svgexport = require('svgexport');
 
 svgexport.render(datafile, callback);
 ```
-See command line usage for datafile content, it can be an object/array or a JSON file path with similar content.
+`datafile` can be an object/array or a JSON file path, see command line usage for its format.
 
 
 *Keywords: svg, export, rasterize, converter, png, jpeg, jpg, pdf, cli, command-line, inkscape, illustrator, coreldraw*
