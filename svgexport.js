@@ -29,13 +29,24 @@ function cli() {
     if (!readme) {
       console.log('Invalid usage, see docs!');
     } else {
-      console.log('Usage:');
-      var print = 0;
+      var print = 0, usage = 0;
       readme.split(/\n/).map(function(line) {
         if (print == 1 && /```/.test(line)) {
-          print = false;
+          print = 0;
         }
-        (print == 1) && console.log('    ' + line);
+        if (print > 0) {
+          if (/^svgexport/.test(line)) {
+            if (usage == 0) {
+              line = 'Usage: ' + line;
+              usage = 1;
+            } else if (usage == 1) {
+              line = '   or: ' + line;
+            }
+          } else {
+            usage = -1;
+          }
+          console.log(line);
+        }
         if (/```usage/.test(line)) {
           print = 1;
         }
@@ -169,6 +180,19 @@ function render(data, done) {
 
       });
 
+      params.last(/^(\d+(mm|cm|in|px)):(\d+(mm|cm|in|px))$/i, function(match) {
+        cmd.paperWidth = match[1];
+        cmd.paperHeight = match[3];
+      });
+
+      params.first(/^(A3|A4|A5|Legal|Letter|Tabloid)$/i, function(match) {
+        cmd.paperFormat = match[1];
+      });
+
+      params.first(/^(portrait|landscape)$/i, function(match) {
+        cmd.paperOrientation = match[1];
+      });
+
       commands.push(cmd);
     });
   });
@@ -210,10 +234,18 @@ function exec(commands, done) {
 
       page.clipRect = cmd;
       page.zoomFactor = cmd.scale;
-      page.paperSize = {
-        width : cmd.width / 150 + 'in',
-        height : cmd.height / 150 + 'in'
-      };
+
+      if (cmd.paperWidth && cmd.paperHeight) {
+        page.paperSize = {
+          width : cmd.paperWidth,
+          height : cmd.paperHeight
+        };
+      } else if (cmd.paperFormat) {
+        page.paperSize = {
+          format : cmd.paperFormat,
+          orientation : cmd.paperOrientation
+        };
+      }
 
       setTimeout(function() {
         page.render(cmd.output, {
