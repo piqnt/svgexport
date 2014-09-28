@@ -14,12 +14,12 @@ Usage
 svgexport <input file> <output file> <options>
 svgexport <datafile>
 
-<options>        [<format>] [<quality>%] <input viewbox> [<output size>] [<paper size>]
+<options>        [<format>] [<quality>%] <input viewbox> <output size> [<pdf size>]
 <format>         png|jpeg|jpg|pdf
 <quality>        1-100
 <input viewbox>  [<left>:<top>:]<width>:<height>
-<output size>    <scale>x|<width>w|<height>h|<width>:<height>
-<paper size>     <width>(mm|cm|in|px):<height>(mm|cm|in|px)
+<output size>    <scale>x|<width>:<height>|[<width>:|:<height>
+<pdf size>       <width>(mm|cm|in|px):<height>(mm|cm|in|px)
                  A3|A4|A5|Legal|Letter|Tabloid [portrait|landscape]
 
 <datafile>       A JSON file with following content:
@@ -32,22 +32,19 @@ svgexport <datafile>
                  }, ...]
 
 Examples:        svgexport input.svg output.png 24:24 4x
+                 svgexport input.svg output.png 54:
                  svgexport input.svg output.jpeg 80% 24:24 48:64
                  svgexport input.svg output.pdf 24:24 3x A3 landscape
 
-If format is not specified, it will be inferred from output file extension or
-defaults to "png".
-
-If output size is specified as width:height and its aspect ratio doesn't match
+- If input viewbox is not specified it will be inferred from input file.
+- If output size is specified as width:height and its aspect ratio doesn't match
 input viewbox, viewbox will be centered and cropped.
-
-Instead of JSON file, a Node module which exports same content can be provided
+- If format is not specified, it will be inferred from output file extension or
+defaults to "png".
+- In datafile, input file options are merged with and overridden by output file 
+options.
+- Instead of JSON file, a Node module which exports same content can be provided
 as datafile.
-
-In datafile, options specified after output file are merged with and take
-precedence over options specified after output file.
-
-Paper size is only used for PDF output.
 ```
 
 #### Node Module

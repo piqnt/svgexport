@@ -15,7 +15,6 @@ if (typeof phantom !== 'undefined') {
 } else {
   module.exports.render = render;
   module.exports.cli = cli;
-  module.exports.exec = send;
 }
 
 function cli() {
@@ -96,104 +95,21 @@ function render(data, done) {
   data.forEach(function(entry) {
 
     var input = entry.src || entry.input;
-    input = {
-      file : /^\S+/.exec(input)[0],
-      params : input
-    };
-
     var outputs = entry.dest || entry.output;
+
+    input = input.split(/\s+/);
+    input[0] = path.resolve(base, input[0]);
+
     outputs = Array.isArray(outputs) ? outputs : [ outputs ];
     outputs.forEach(function(output) {
 
-      output = {
-        file : /^\S+/.exec(output)[0],
-        params : output
-      };
+      output = output.split(/\s+/);
+      output[0] = path.resolve(base, output[0]);
 
-      var cmd = {
-        input : path.resolve(base, input.file),
-        scale : 1,
-        format : 'png',
-        quality : 100
-      };
-
-      cmd.output = path.resolve(base, output.file);
-
-      var params = new Params(input.params + ' ' + output.params);
-
-      params.first(/^(\d+)\%$/i, function(match) {
-        cmd.quality = match[1];
+      commands.push({
+        input : input,
+        output : output
       });
-
-      params.first(/^(jpeg|jpg|pdf)$/i, function(match) {
-        cmd.format = match[1];
-      }, function() {
-        var ext = /.(jpeg|jpg|pdf)$/.exec(cmd.output);
-        if (ext && ext[1]) {
-          cmd.format = ext[1];
-        }
-      });
-
-      cmd.format = cmd.format.toLowerCase().replace('jpg', 'jpeg');
-
-      params.last(/^(\d+):(\d+)$/i, function(match) {
-        cmd.left = 0;
-        cmd.top = 0;
-        cmd.width = match[1];
-        cmd.height = match[2];
-      });
-
-      params.last(/^((\d+):(\d+):)?(\d+):(\d+)$/i, function(match) {
-        var left = match[2] || 0;
-        var top = match[3] || 0;
-        var width = match[4];
-        var height = match[5];
-
-        var scalex = cmd.width / width;
-        var scaley = cmd.height / height;
-        cmd.scale = Math.max(scalex, scaley);
-        cmd.left = left * cmd.scale + (width * cmd.scale - cmd.width) / 2;
-        cmd.top = top * cmd.scale + (height * cmd.scale - cmd.height) / 2;
-
-      }) || params.last(/^(\d+)x$/i, function(match) {
-        cmd.scale = match[1];
-        cmd.left *= cmd.scale;
-        cmd.top *= cmd.scale;
-        cmd.width *= cmd.scale;
-        cmd.height *= cmd.scale;
-
-      }) || params.last(/^(\d+)w$/i, function(match) {
-        var width = match[1];
-        cmd.scale = width / cmd.width;
-        cmd.left *= cmd.scale;
-        cmd.top *= cmd.scale;
-        cmd.width = width;
-        cmd.height *= cmd.scale;
-
-      }) || params.last(/^(\d+)h$/i, function(match) {
-        var height = match[1];
-        cmd.scale = height / cmd.height;
-        cmd.left *= cmd.scale;
-        cmd.top *= cmd.scale;
-        cmd.width *= cmd.scale;
-        cmd.height = height;
-
-      });
-
-      params.last(/^(\d+(mm|cm|in|px)):(\d+(mm|cm|in|px))$/i, function(match) {
-        cmd.paperWidth = match[1];
-        cmd.paperHeight = match[3];
-      });
-
-      params.first(/^(A3|A4|A5|Legal|Letter|Tabloid)$/i, function(match) {
-        cmd.paperFormat = match[1];
-      });
-
-      params.first(/^(portrait|landscape)$/i, function(match) {
-        cmd.paperOrientation = match[1];
-      });
-
-      commands.push(cmd);
     });
   });
 
@@ -225,12 +141,32 @@ function exec(commands, done) {
 
   async.each(commands, function(cmd, done) {
     var page = webpage.create();
-    page.open(cmd.input, function(status) {
+    page.open(cmd.input[0], function(status) {
+
       if (status !== 'success') {
         var err = 'Error: Unable to load ' + cmd.input + ' (' + status + ')';
         done && done(err);
         return;
       }
+
+      var viewbox = page.evaluate(function() {
+        var el = document.documentElement;
+        var box = {
+          left : 0,
+          top : 0,
+          width : el.getAttribute('width'),
+          height : el.getAttribute('height')
+        };
+        if (el.viewbox && (!box.width || !box.height)) {
+          box = el.viewBox.animVal;
+        }
+        if (!box.width || !box.height) {
+          box = el.getBBox();
+        }
+        return box;
+      });
+
+      parse(cmd, viewbox);
 
       page.clipRect = cmd;
       page.zoomFactor = cmd.scale;
@@ -248,7 +184,7 @@ function exec(commands, done) {
       }
 
       setTimeout(function() {
-        page.render(cmd.output, {
+        page.render(cmd.output[0], {
           format : cmd.format,
           quality : cmd.quality
         });
@@ -256,10 +192,97 @@ function exec(commands, done) {
         done && done();
       }, 0);
     });
-
   }, function(err) {
     done && done(err);
   });
+}
+
+function parse(cmd, box) {
+
+  var params = new Params(cmd.input.join(' ') + ' ' + cmd.output.join(' '));
+
+  cmd.scale = 1;
+  cmd.format = 'png';
+  cmd.quality = 100;
+
+  params.first(/^(\d+)\%$/i, function(match) {
+    cmd.quality = match[1];
+  });
+
+  params.first(/^(jpeg|jpg|pdf)$/i, function(match) {
+    cmd.format = match[1];
+  }, function() {
+    var ext = /.(jpeg|jpg|pdf)$/.exec(cmd.output[0]);
+    if (ext && ext[1]) {
+      cmd.format = ext[1];
+    }
+  });
+
+  cmd.format = cmd.format.toLowerCase().replace('jpg', 'jpeg');
+
+  params.first(/^([0-9.]+(mm|cm|in|px)):([0-9.]+(mm|cm|in|px))$/i, function(
+      match) {
+    cmd.paperWidth = match[1];
+    cmd.paperHeight = match[3];
+  });
+
+  params.first(/^(A3|A4|A5|Legal|Letter|Tabloid)$/i, function(match) {
+    cmd.paperFormat = match[1];
+  });
+
+  params.first(/^(portrait|landscape)$/i, function(match) {
+    cmd.paperOrientation = match[1];
+  });
+
+  params.last(/^([0-9.]+)x$/i, function(match) {
+    cmd.scale = match[1];
+
+  }) || params.last(/^(\d+)w$/i, function(match) {
+    cmd.width = match[1];
+
+  }) || params.last(/^(\d+):$/i, function(match) {
+    cmd.width = match[1];
+
+  }) || params.last(/^(\d+)h$/i, function(match) {
+    cmd.height = match[1];
+
+  }) || params.last(/^:(\d+)$/i, function(match) {
+    cmd.height = match[1];
+
+  }) || params.last(/^(\d+):(\d+)$/i, function(match) {
+    cmd.width = match[1];
+    cmd.height = match[2];
+  });
+
+  params.last(/^((-?\d+):(-?\d+):)?(\d+):(\d+)$/i, function(match) {
+    box = {
+      left : match[2] || 0,
+      top : match[3] || 0,
+      width : match[4],
+      height : match[5]
+    };
+  });
+
+  if (cmd.width && cmd.height) {
+    cmd.scale = Math.max(cmd.width / box.width, cmd.height / box.height);
+
+  } else if (cmd.width) {
+    cmd.scale = cmd.width / box.width;
+    cmd.height = box.height * cmd.scale;
+
+  } else if (cmd.height) {
+    cmd.scale = cmd.height / box.height;
+    cmd.width = box.width * cmd.scale;
+
+  } else {
+    cmd.height = box.height * cmd.scale;
+    cmd.width = box.width * cmd.scale;
+  }
+
+  cmd.left = box.left * cmd.scale + (box.width * cmd.scale - cmd.width) / 2;
+  cmd.top = box.top * cmd.scale + (box.height * cmd.scale - cmd.height) / 2;
+
+  return cmd;
 }
 
 function Params(cmd) {
@@ -270,10 +293,8 @@ function Params(cmd) {
       var param = params[i];
       var match = regex.exec(param);
       if (match) {
-        if (!callback(match)) {
-          params.splice(i, 1);
-          i--;
-        }
+        params.splice(i--, 1);
+        callback(match);
         return true;
       }
     }
@@ -286,9 +307,8 @@ function Params(cmd) {
       var param = params[i];
       var match = regex.exec(param);
       if (match) {
-        if (!callback(match)) {
-          params.splice(i, 1);
-        }
+        params.splice(i, 1);
+        callback(match);
         return true;
       }
     }
@@ -298,8 +318,8 @@ function Params(cmd) {
 }
 
 function strcmd(cmd) {
-  return cmd.input + ' ' + cmd.output + ' ' + cmd.format + ' ' + cmd.quality
-      + '%' + ' ' + cmd.scale + 'x' + ' ' + cmd.left / cmd.scale + ':'
-      + cmd.top / cmd.scale + ':' + cmd.width / cmd.scale + ':'
+  return cmd.input[0] + ' ' + cmd.output[0] + ' ' + cmd.format + ' '
+      + cmd.quality + '%' + ' ' + cmd.scale + 'x' + ' ' + cmd.left / cmd.scale
+      + ':' + cmd.top / cmd.scale + ':' + cmd.width / cmd.scale + ':'
       + cmd.height / cmd.scale + ' ' + cmd.width + ':' + cmd.height;
 }

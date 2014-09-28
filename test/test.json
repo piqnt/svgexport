@@ -1,9 +1,9 @@
 [ {
   "input" : "test.svg 16:16",
   "output" : [
-    "../exported/32h.png 32h",
-    "../exported/32w.png 32w",
-    "../exported/2x.png 2x",
+    "../exported/32h.png :32",
+    "../exported/32w.png 32:",
+    "../exported/2.5x16.png 2.5x",
     "../exported/16-16.png",
     "../exported/32-32.png 16:16 32:32",
     "../exported/64-32.png 64:32",
@@ -13,5 +13,13 @@
     "../exported/jpeg-high.jpg 99% 320:320",
     "../exported/pdf-cm.pdf 2cm:2cm",
     "../exported/pdf-a5.pdf A5 landscape"
+  ]
+}, {
+  "input" : "test.svg -1:-1:18:18",
+  "output" : [
+    "../exported/36h.png :36",
+    "../exported/36w.png 36:",
+    "../exported/2.5x18.png 2.5x",
+    "../exported/18-18.png"
   ]
 } ]
