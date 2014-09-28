@@ -18,7 +18,7 @@ svgexport <datafile>
 <format>         png|jpeg|jpg|pdf
 <quality>        1-100
 <input viewbox>  [<left>:<top>:]<width>:<height>
-<output size>    <scale>x|<width>:<height>|[<width>:|:<height>
+<output size>    <scale>x|<width>:<height>|<width>:|:<height>
 <pdf size>       <width>(mm|cm|in|px):<height>(mm|cm|in|px)
                  A3|A4|A5|Legal|Letter|Tabloid [portrait|landscape]
 
