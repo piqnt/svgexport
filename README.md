@@ -14,7 +14,7 @@ Usage
 svgexport <input file> <output file> <options>
 svgexport <datafile>
 
-<options>        [<format>] [<quality>%] <input viewbox> <output size> [<pdf size>]
+<options>        [<format>] [<quality>%] [<input viewbox>] [<output size>] [<pdf size>]
 <format>         png|jpeg|jpg|pdf
 <quality>        1-100
 <input viewbox>  [<left>:<top>:]<width>:<height>
@@ -25,23 +25,20 @@ svgexport <datafile>
 <datafile>       A JSON file with following content:
                  [ {
                    "input" : "<input file> <options>",
-                   "output": [
-                     "<output file> <options>",
-                     ...
-                   ]
+                   "output": [ "<output file> <options>", ... ]
                  }, ...]
 
-Examples:        svgexport input.svg output.png 24:24 4x
+Examples:        svgexport input.svg output.png 24:24 1x
                  svgexport input.svg output.png 54:
-                 svgexport input.svg output.jpeg 80% 24:24 48:64
-                 svgexport input.svg output.pdf 24:24 3x A3 landscape
+                 svgexport input.svg output.jpg 80% 24:24 48:64
+                 svgexport input.svg output.pdf 2x A3 landscape
 
 - If input viewbox is not specified it will be inferred from input file.
 - If output size is specified as width:height and its aspect ratio doesn't match
 input viewbox, viewbox will be centered and cropped.
 - If format is not specified, it will be inferred from output file extension or
 defaults to "png".
-- In datafile, input file options are merged with and overridden by output file 
+- In datafile, input file options are merged with and overridden by output file
 options.
 - Instead of JSON file, a Node module which exports same content can be provided
 as datafile.
