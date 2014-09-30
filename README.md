@@ -16,9 +16,12 @@ svgexport <datafile>
 
 <options>        [<format>] [<quality>%] [<input viewbox>] [<output size>] [<pdf size>]
 <format>         png|jpeg|jpg|pdf
+                 If not specified, it will be inferred from output file extension or defaults to "png".
 <quality>        1-100
 <input viewbox>  [<left>:<top>:]<width>:<height>
-<output size>    <scale>x|<width>:<height>|<width>:|:<height>
+                 If input viewbox is not specified it will be inferred from input file.
+<output size>    <scale>x|[<width>]:[<height>]
+                 If specified as width:height, viewbox will be centered and cropped to match output aspect ratio.
 <pdf size>       <width>(mm|cm|in|px):<height>(mm|cm|in|px)
                  A3|A4|A5|Legal|Letter|Tabloid [portrait|landscape]
 
@@ -27,21 +30,16 @@ svgexport <datafile>
                    "input" : "<input file> <options>",
                    "output": [ "<output file> <options>", ... ]
                  }, ...]
+                 Input file options are merged with and overridden by output file options.
+                 Instead of a JSON file, a Node module which exports same content can be provided.
+```
 
-Examples:        svgexport input.svg output.png 24:24 1x
-                 svgexport input.svg output.png 54:
-                 svgexport input.svg output.jpg 80% 24:24 48:64
-                 svgexport input.svg output.pdf 2x A3 landscape
-
-- If input viewbox is not specified it will be inferred from input file.
-- If output size is specified as width:height and its aspect ratio doesn't match
-input viewbox, viewbox will be centered and cropped.
-- If format is not specified, it will be inferred from output file extension or
-defaults to "png".
-- In datafile, input file options are merged with and overridden by output file
-options.
-- Instead of JSON file, a Node module which exports same content can be provided
-as datafile.
+Examples
+```
+svgexport input.svg output.png 24:24 1x
+svgexport input.svg output.png 54:
+svgexport input.svg output.jpg 80% 24:24 48:64
+svgexport input.svg output.pdf 2x A3 landscape
 ```
 
 #### Node Module
