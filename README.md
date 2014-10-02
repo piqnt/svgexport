@@ -14,10 +14,10 @@ Usage
 svgexport <input file> <output file> <options>
 svgexport <datafile>
 
-<options>        [<format>] [<quality>%] [<input viewbox>] [<output size>] [<pdf size>]
+<options>        [<format>] [<quality>] [<input viewbox>] [<output size>] [<pdf size>]
 <format>         png|jpeg|jpg|pdf
                  If not specified, it will be inferred from output file extension or defaults to "png".
-<quality>        1-100
+<quality>        1%-100%
 <input viewbox>  [<left>:<top>:]<width>:<height>
                  If input viewbox is not specified it will be inferred from input file.
 <output size>    <scale>x|[<width>]:[<height>]
