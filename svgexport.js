@@ -151,20 +151,25 @@ function exec(commands, done) {
 
       var viewbox = page.evaluate(function() {
         var el = document.documentElement;
-        var box = {
-          left : 0,
-          top : 0,
-          width : el.getAttribute('width'),
-          height : el.getAttribute('height')
+        if (el.getAttribute('width') && el.getAttribute('height')) {
+          return {
+            left : 0,
+            top : 0,
+            width : el.width.animVal.value,
+            height : el.height.animVal.value
+          };
+        }
+        var box = el.getAttribute('viewBox') ? el.viewBox.animVal : el
+            .getBBox();
+        return {
+          left : box.x,
+          top : box.y,
+          width : box.width,
+          height : box.height
         };
-        if (el.viewbox && (!box.width || !box.height)) {
-          box = el.viewBox.animVal;
-        }
-        if (!box.width || !box.height) {
-          box = el.getBBox();
-        }
-        return box;
       });
+
+      // console.log(JSON.stringify(viewbox, null, 2));
 
       parse(cmd, viewbox);
 
@@ -319,7 +324,12 @@ function Params(cmd) {
 
 function strcmd(cmd) {
   return cmd.input[0] + ' ' + cmd.output[0] + ' ' + cmd.format + ' '
-      + cmd.quality + '%' + ' ' + cmd.scale + 'x' + ' ' + cmd.left / cmd.scale
-      + ':' + cmd.top / cmd.scale + ':' + cmd.width / cmd.scale + ':'
-      + cmd.height / cmd.scale + ' ' + cmd.width + ':' + cmd.height;
+      + cmd.quality + '%' + ' ' + cmd.scale + 'x' + ' '
+      + strnum(cmd.left / cmd.scale) + ':' + strnum(cmd.top / cmd.scale) + ':'
+      + strnum(cmd.width / cmd.scale) + ':' + strnum(cmd.height / cmd.scale)
+      + ' ' + strnum(cmd.width) + ':' + strnum(cmd.height);
+}
+
+function strnum(n) {
+  return (n * 100 | 0) / 100;
 }
