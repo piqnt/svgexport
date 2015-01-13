@@ -149,52 +149,56 @@ function exec(commands, done) {
         return;
       }
 
-      var viewbox = page.evaluate(function() {
-        var el = document.documentElement;
-        if (el.getAttribute('width') && el.getAttribute('height')) {
+      try {
+
+        var viewbox = page.evaluate(function() {
+          var el = document.documentElement;
+          if (el.getAttribute('width') && el.getAttribute('height')) {
+            return {
+              left : 0,
+              top : 0,
+              width : el.width.animVal.value,
+              height : el.height.animVal.value
+            };
+          }
+          var box = el.getAttribute('viewBox') ? el.viewBox.animVal : el
+              .getBBox();
           return {
-            left : 0,
-            top : 0,
-            width : el.width.animVal.value,
-            height : el.height.animVal.value
+            more : el.getBBox(),
+            left : box.x,
+            top : box.y,
+            width : box.width,
+            height : box.height
           };
-        }
-        var box = el.getAttribute('viewBox') ? el.viewBox.animVal : el
-            .getBBox();
-        return {
-          left : box.x,
-          top : box.y,
-          width : box.width,
-          height : box.height
-        };
-      });
+        });
 
-      // console.log(JSON.stringify(viewbox, null, 2));
+        // console.log(JSON.stringify(viewbox, null, 2));
 
-      parse(cmd, viewbox);
+        parse(cmd, viewbox);
 
-      page.clipRect = cmd;
-      page.zoomFactor = cmd.scale;
+        page.clipRect = cmd;
+        page.zoomFactor = cmd.scale;
 
-      if (cmd.paperWidth && cmd.paperHeight) {
         page.paperSize = {
           width : cmd.paperWidth,
           height : cmd.paperHeight
         };
-      } else if (cmd.paperFormat) {
-        page.paperSize = {
-          format : cmd.paperFormat,
-          orientation : cmd.paperOrientation
-        };
-      }
 
+      } catch (e) {
+        done && done(e);
+      }
       setTimeout(function() {
-        page.render(cmd.output[0], {
-          format : cmd.format,
-          quality : cmd.quality
-        });
-        console.log(strcmd(cmd));
-        done && done();
+        try {
+
+          page.render(cmd.output[0], {
+            format : cmd.format,
+            quality : cmd.quality
+          });
+          console.log(strcmd(cmd));
+          done && done();
+        } catch (e) {
+          done && done(e);
+        }
       }, 0);
     });
   }, function(err) {
@@ -214,10 +218,10 @@ function parse(cmd, box) {
     cmd.quality = match[1];
   });
 
-  params.first(/^(jpeg|jpg|pdf)$/i, function(match) {
+  params.first(/^(jpeg|jpg)$/i, function(match) {
     cmd.format = match[1];
   }, function() {
-    var ext = /.(jpeg|jpg|pdf)$/.exec(cmd.output[0]);
+    var ext = /.(jpeg|jpg)$/.exec(cmd.output[0]);
     if (ext && ext[1]) {
       cmd.format = ext[1];
     }
@@ -225,31 +229,11 @@ function parse(cmd, box) {
 
   cmd.format = cmd.format.toLowerCase().replace('jpg', 'jpeg');
 
-  params.first(/^([0-9.]+(mm|cm|in|px)):([0-9.]+(mm|cm|in|px))$/i, function(
-      match) {
-    cmd.paperWidth = match[1];
-    cmd.paperHeight = match[3];
-  });
-
-  params.first(/^(A3|A4|A5|Legal|Letter|Tabloid)$/i, function(match) {
-    cmd.paperFormat = match[1];
-  });
-
-  params.first(/^(portrait|landscape)$/i, function(match) {
-    cmd.paperOrientation = match[1];
-  });
-
   params.last(/^([0-9.]+)x$/i, function(match) {
     cmd.scale = match[1];
 
-  }) || params.last(/^(\d+)w$/i, function(match) {
-    cmd.width = match[1];
-
   }) || params.last(/^(\d+):$/i, function(match) {
     cmd.width = match[1];
-
-  }) || params.last(/^(\d+)h$/i, function(match) {
-    cmd.height = match[1];
 
   }) || params.last(/^:(\d+)$/i, function(match) {
     cmd.height = match[1];

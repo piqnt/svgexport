@@ -10,9 +10,7 @@
     "../exported/32-64.png 32:64",
     "../exported/offset.png 8:8:8:8 32:32",
     "../exported/jpeg-low.jpg 1% 320:320",
-    "../exported/jpeg-high.jpg 99% 320:320",
-    "../exported/pdf-cm.pdf 2cm:2cm",
-    "../exported/pdf-a5.pdf A5 landscape"
+    "../exported/jpeg-high.jpg 99% 320:320"
   ]
 }, {
   "input" : "test.svg -1:-1:18:18",
