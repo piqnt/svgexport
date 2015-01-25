@@ -23,12 +23,12 @@
     "url": "https://github.com/shakiba/svgexport.git"
   },
   "dependencies": {
-    "phantomjs": ">= 1.0.0",
+    "phantomjs": "1.9.8",
     "async": "~0.9.0"
   },
-  "main": "svgexport.js",
+  "main": "index.js",
   "bin": {
-    "svgexport" : "svgexport-cli.js"
+    "svgexport" : "bin/index.js"
   },
   "preferGlobal": "true"
 }

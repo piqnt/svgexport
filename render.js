@@ -1,150 +1,29 @@
-if (typeof phantom !== 'undefined') {
-  try {
-    if (phantom.args.length !== 1) {
-      console.error('Error: Invalid commands!');
-      phantom.exit();
-    }
-    exec(JSON.parse(phantom.args[0]), function(err) {
-      err && console.log(err);
-      phantom.exit();
-    });
-  } catch (e) {
-    console.error(e);
-    phantom.exit();
+try {
+  var webpage = require('webpage');
+  var async = require('async');
+
+  if (phantom.args.length !== 1) {
+    exit('Error: Invalid commands!');
   }
-} else {
-  module.exports.render = render;
-  module.exports.cli = cli;
+  exec(JSON.parse(phantom.args[0]), exit);
+} catch (e) {
+  exit(e);
 }
 
-function cli() {
-  var path = require('path');
-  var fs = require('fs');
-
-  if (process.argv.length < 3) {
-    var readme = path.resolve(__dirname, 'README.md');
-    readme = fs.readFileSync(readme, 'utf8');
-    console.log();
-    if (!readme) {
-      console.log('Invalid usage, see docs!');
-    } else {
-      var print = 0, usage = 0;
-      readme.split(/\n/).map(function(line) {
-        if (print == 1 && /```/.test(line)) {
-          print = 0;
-        }
-        if (print > 0) {
-          if (/^svgexport/.test(line)) {
-            if (usage == 0) {
-              line = 'Usage: ' + line;
-              usage = 1;
-            } else if (usage == 1) {
-              line = '   or: ' + line;
-            }
-          } else {
-            usage = -1;
-          }
-          console.log(line);
-        }
-        if (/```usage/.test(line)) {
-          print = 1;
-        }
-      });
-    }
-    console.log();
-
-  } else if (process.argv.length === 3) {
-    render(path.resolve(process.cwd(), process.argv[2]), function(err) {
-      err && console.log(err);
-    });
-
-  } else {
-    render({
-      input : process.argv[2],
-      output : process.argv.slice(3).join(' '),
-      base : process.cwd()
-    }, function(err) {
-      err && console.log(err);
-    });
-  }
-}
-
-function render(data, done) {
-  var path = require('path');
-
-  var base;
-  if (typeof data === 'string') {
-    data = path.resolve(process.cwd(), data);
-    base = path.dirname(data);
-    try {
-      data = require(data);
-    } catch (e) {
-      return done('Error: Unable to load ' + data);
-    }
-  } else {
-    base = data.base || process.cwd();
-  }
-
-  if (!base) {
-    base = process.cwd();
-  }
-
-  var commands = [];
-
-  data = Array.isArray(data) ? data : [ data ];
-  data.forEach(function(entry) {
-
-    var input = entry.src || entry.input;
-    var outputs = entry.dest || entry.output;
-
-    input = input.split(/\s+/);
-    input[0] = path.resolve(base, input[0]);
-
-    outputs = Array.isArray(outputs) ? outputs : [ outputs ];
-    outputs.forEach(function(output) {
-
-      output = output.split(/\s+/);
-      output[0] = path.resolve(base, output[0]);
-
-      commands.push({
-        input : input,
-        output : output
-      });
-    });
-  });
-
-  send(commands, done);
-}
-
-function send(commands, done) {
-  commands = JSON.stringify(commands);
-  var path = require('path');
-  var execFile = require('child_process').execFile;
-  var phantom = path.resolve(__dirname,
-      './node_modules/phantomjs/bin/phantomjs');
-  execFile(process.execPath, [ phantom, __filename, commands ], function(err,
-      stdout, stderr) {
-    if (stdout.length > 0)
-      console.log(stdout.toString().trim());
-    if (stderr.length > 0)
-      console.log(stderr.toString().trim());
-    done && done(err);
-  });
+function exit(err) {
+  err && console.error(err);
+  phantom.exit(err ? 1 : 0);
 }
 
 function exec(commands, done) {
 
-  var webpage = require('webpage');
-  var async = require('async');
-
   commands = Array.isArray(commands) ? commands : [ commands ];
-
   async.each(commands, function(cmd, done) {
     var page = webpage.create();
     page.open(cmd.input[0], function(status) {
 
       if (status !== 'success') {
-        var err = 'Error: Unable to load ' + cmd.input + ' (' + status + ')';
+        var err = 'Error: Unable to load file (' + status + '): ' + cmd.input;
         done && done(err);
         return;
       }
@@ -172,24 +51,17 @@ function exec(commands, done) {
           };
         });
 
-        // console.log(JSON.stringify(viewbox, null, 2));
-
         parse(cmd, viewbox);
 
         page.clipRect = cmd;
         page.zoomFactor = cmd.scale;
 
-        page.paperSize = {
-          width : cmd.paperWidth,
-          height : cmd.paperHeight
-        };
-
       } catch (e) {
         done && done(e);
       }
+
       setTimeout(function() {
         try {
-
           page.render(cmd.output[0], {
             format : cmd.format,
             quality : cmd.quality
@@ -208,7 +80,7 @@ function exec(commands, done) {
 
 function parse(cmd, box) {
 
-  var params = new Params(cmd.input.join(' ') + ' ' + cmd.output.join(' '));
+  var params = new Params([].concat(cmd.input, cmd.output));
 
   cmd.scale = 1;
   cmd.format = 'png';
@@ -274,8 +146,7 @@ function parse(cmd, box) {
   return cmd;
 }
 
-function Params(cmd) {
-  var params = cmd.split(/\s+/);
+function Params(params) {
 
   this.first = function(regex, callback, fallback) {
     for (var i = 0; i < params.length; i++) {
