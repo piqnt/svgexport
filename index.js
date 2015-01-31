@@ -8,7 +8,7 @@ module.exports.cli = cli;
 function cli(args) {
 
   if (args.length === 1 && /.(js|json)$/i.test(args[0])) {
-    render(path.resolve(process.cwd(), args.shift()), error);
+    render(path.resolve(process.cwd(), args.shift()), process);
     return;
   }
 
@@ -17,7 +17,7 @@ function cli(args) {
       input : args.shift(),
       output : args.join(' '),
       base : process.cwd()
-    }, error);
+    }, process);
     return;
   }
 
@@ -32,14 +32,20 @@ function cli(args) {
     return;
   }
 
-  error('Error: Invalid usage!');
-
-  function error(err) {
-    err && console.error(err);
-  }
+  console.error('Error: Invalid usage!');
 }
 
 function render(data, done) {
+
+  var stdio = done;
+  var stdout = stdio && stdio.stdout ? function(data) {
+    stdio.stdout.write(data);
+  } : noop;
+  var stderr = stdio && stdio.stderr ? function(data) {
+    stdio.stderr.write(data);
+  } : noop;
+
+  done = typeof done === 'function' ? done : noop;
 
   var base;
   if (typeof data === 'string') {
@@ -48,7 +54,9 @@ function render(data, done) {
     try {
       data = require(data);
     } catch (e) {
-      return done('Error: Invalid data file: ' + data);
+      var err = 'Error: Invalid data file: ' + data + '\n';
+      stderr(err);
+      return done(err);
     }
   } else {
     base = data.base || process.cwd();
@@ -86,7 +94,32 @@ function render(data, done) {
   var phantomjs = path.resolve(__dirname,
       'node_modules/phantomjs/bin/phantomjs');
   var renderjs = path.resolve(__dirname, 'render.js');
-  child_process.spawn(phantomjs, [ renderjs, commands ], {
-    stdio : 'inherit'
+  var cp = child_process.spawn(phantomjs, [ renderjs, commands ]);
+
+  var wait = 3, exit = 0, errors = [], callback = function() {
+    if (--wait === 0) {
+      done(exit && errors.join('\n'));
+    }
+  };
+
+  cp.stdout.on('data', function(data) {
+    stdout(data);
   });
+  cp.stderr.on('data', function(data) {
+    errors.push(data.toString());
+    stderr(data);
+  });
+  cp.stdout.on('end', function() {
+    callback();
+  });
+  cp.stderr.on('end', function() {
+    callback();
+  });
+  cp.on('exit', function(code) {
+    exit = code;
+    callback();
+  });
+}
+
+function noop() {
 }

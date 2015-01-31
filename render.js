@@ -1,6 +1,7 @@
 try {
   var webpage = require('webpage');
   var async = require('async');
+  var system = require('system');
 
   if (phantom.args.length !== 1) {
     exit('Error: Invalid commands!');
@@ -11,7 +12,7 @@ try {
 }
 
 function exit(err) {
-  err && console.error(err);
+  err && system.stderr.writeLine(err);
   phantom.exit(err ? 1 : 0);
 }
 
@@ -66,7 +67,7 @@ function exec(commands, done) {
             format : cmd.format,
             quality : cmd.quality
           });
-          console.log(strcmd(cmd));
+          system.stdout.writeLine(strcmd(cmd));
           done && done();
         } catch (e) {
           done && done(e);
