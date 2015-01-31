@@ -1,6 +1,6 @@
 var path = require('path');
 var fs = require('fs');
-var chproc = require('child_process');
+var child_process = require('child_process');
 
 module.exports.render = render;
 module.exports.cli = cli;
@@ -8,27 +8,35 @@ module.exports.cli = cli;
 function cli(args) {
 
   if (args.length === 1 && /.(js|json)$/i.test(args[0])) {
-    render(path.resolve(process.cwd(), args.shift()), function(err) {
-      err && console.log(err);
-    });
+    render(path.resolve(process.cwd(), args.shift()), error);
     return;
+  }
 
-  } else if (args.length > 1) {
+  if (args.length > 1) {
     render({
       input : args.shift(),
       output : args.join(' '),
       base : process.cwd()
-    }, function(err) {
-      err && console.log(err);
-    });
+    }, error);
     return;
   }
 
-  var readme = path.resolve(__dirname, 'README.md');
-  readme = fs.readFileSync(readme, 'utf8');
-  readme = readme.match(/```usage([\s\S]*?)```/i);
-  console.log(readme[1].replace(/\nsvgexport/, '\nUsage: svgexport').replace(
-      /\nsvgexport/g, '\n  or:  svgexport'));
+  if (!args.length || (args.length === 1 && /(-h|--help|help)$/i.test(args[0]))) {
+    try {
+      console.log(fs.readFileSync(path.resolve(__dirname, 'README.md'), 'utf8')
+          .match(/```usage([\s\S]*?)```/i)[1].replace(/\nsvgexport/,
+          '\nUsage: svgexport').replace(/\nsvgexport/g, '\n  or:  svgexport'));
+    } catch (e) {
+      console.log('Off-line `svgexport` help is not available!');
+    }
+    return;
+  }
+
+  error('Error: Invalid usage!');
+
+  function error(err) {
+    err && console.error(err);
+  }
 }
 
 function render(data, done) {
@@ -78,7 +86,7 @@ function render(data, done) {
   var phantomjs = path.resolve(__dirname,
       'node_modules/phantomjs/bin/phantomjs');
   var renderjs = path.resolve(__dirname, 'render.js');
-  chproc.spawn(phantomjs, [ renderjs, commands ], {
+  child_process.spawn(phantomjs, [ renderjs, commands ], {
     stdio : 'inherit'
   });
 }
