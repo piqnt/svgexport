@@ -91,8 +91,7 @@ function render(data, done) {
   });
 
   commands = JSON.stringify(commands);
-  var phantomjs = path.resolve(__dirname,
-      'node_modules/phantomjs/bin/phantomjs');
+  var phantomjs = path.resolve(__dirname, 'node_modules/.bin/phantomjs');
   var renderjs = path.resolve(__dirname, 'render.js');
   var cp = child_process.spawn(phantomjs, [ renderjs, commands ]);
 

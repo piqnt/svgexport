@@ -6,13 +6,6 @@ var svgexport = require('../');
 
 // TODO: compare exported files
 
-var output = {
-  help : /^\sUsage:/,
-  invalidargs : /^Error: Invalid usage!\n$/,
-  invalidsvg : /^Error: Unable to load file \(fail\): .*missing\.svg\n$/,
-  invaliddata : /^Error: Invalid data file: .*missing\.json\n$/
-};
-
 describe('Module', function() {
   it('missing svg', function(done) {
     svgexport.render({
@@ -29,7 +22,7 @@ describe('Module', function() {
       done();
     });
   });
-  it('simple', function(done) {
+  it('test.svg', function(done) {
     svgexport.render({
       "input" : resolve('test.svg'),
       "output" : resolve('exported/test.png')
@@ -38,7 +31,7 @@ describe('Module', function() {
       done();
     });
   });
-  it('data file', function(done) {
+  it('test.json', function(done) {
     svgexport.render(resolve('test.json'), function(err) {
       err.should.not.be.ok;
       done();
@@ -99,27 +92,14 @@ describe('CLI', function() {
   it('test.svg', function(done) {
     cli([ 'test.svg', 'exported/test.png' ], {
       stderr : /^$/,
-      stdout : /^.*test.svg .*test.png png 100% 1x 0:0:16:16 16:16\n$/,
+      stdout : output.testsvg,
       done : done
     });
   });
   it('test.json', function(done) {
     cli([ 'test.json' ], {
       stderr : /^$/,
-      stdout : new RegExp(".*test.svg .*32h.png png 100% 2x 0:0:16:16 32:32\n"
-          + ".*test.svg .*32w.png png 100% 2x 0:0:16:16 32:32\n"
-          + ".*test.svg .*2.5x16.png png 100% 2.5x 0:0:16:16 40:40\n"
-          + ".*test.svg .*16-16.png png 100% 1x 0:0:16:16 16:16\n"
-          + ".*test.svg .*32-32.png png 100% 2x 0:0:16:16 32:32\n"
-          + ".*test.svg .*64-32.png png 100% 4x 0:4:16:8 64:32\n"
-          + ".*test.svg .*32-64.png png 100% 4x 4:0:8:16 32:64\n"
-          + ".*test.svg .*offset.png png 100% 4x 8:8:8:8 32:32\n"
-          + ".*test.svg .*jpeg-low.jpg jpeg 1% 20x 0:0:16:16 320:320\n"
-          + ".*test.svg .*jpeg-high.jpg jpeg 99% 20x 0:0:16:16 320:320\n"
-          + ".*test.svg .*36h.png png 100% 2x -1:-1:18:18 36:36\n"
-          + ".*test.svg .*36w.png png 100% 2x -1:-1:18:18 36:36\n"
-          + ".*test.svg .*2.5x18.png png 100% 2.5x -1:-1:18:18 45:45\n"
-          + ".*test.svg .*18-18.png png 100% 1x -1:-1:18:18 18:18\n"),
+      stdout : output.testjson,
       done : done
     });
   });
@@ -140,3 +120,25 @@ function cli(args, done) {
 function resolve(name) {
   return p.resolve(__dirname, name);
 }
+
+var output = {
+  help : /^\sUsage:/,
+  invalidargs : /^Error: Invalid usage!\n?$/,
+  invalidsvg : /^Error: Unable to load file \(fail\): .*missing\.svg\n?$/,
+  invaliddata : /^Error: Invalid data file: .*missing\.json\n?$/,
+  testsvg : /^.*test.svg .*test.png png 100% 1x 0:0:16:16 16:16\n?$/,
+  testjson : new RegExp(".*test.svg .*32h.png png 100% 2x 0:0:16:16 32:32\n"
+      + ".*test.svg .*32w.png png 100% 2x 0:0:16:16 32:32\n"
+      + ".*test.svg .*2.5x16.png png 100% 2.5x 0:0:16:16 40:40\n"
+      + ".*test.svg .*16-16.png png 100% 1x 0:0:16:16 16:16\n"
+      + ".*test.svg .*32-32.png png 100% 2x 0:0:16:16 32:32\n"
+      + ".*test.svg .*64-32.png png 100% 4x 0:4:16:8 64:32\n"
+      + ".*test.svg .*32-64.png png 100% 4x 4:0:8:16 32:64\n"
+      + ".*test.svg .*offset.png png 100% 4x 8:8:8:8 32:32\n"
+      + ".*test.svg .*jpeg-low.jpg jpeg 1% 20x 0:0:16:16 320:320\n"
+      + ".*test.svg .*jpeg-high.jpg jpeg 99% 20x 0:0:16:16 320:320\n"
+      + ".*test.svg .*36h.png png 100% 2x -1:-1:18:18 36:36\n"
+      + ".*test.svg .*36w.png png 100% 2x -1:-1:18:18 36:36\n"
+      + ".*test.svg .*2.5x18.png png 100% 2.5x -1:-1:18:18 45:45\n"
+      + ".*test.svg .*18-18.png png 100% 1x -1:-1:18:18 18:18\n")
+};
