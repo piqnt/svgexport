@@ -7,6 +7,7 @@ var svgexport = require('../');
 // TODO: compare exported files
 
 describe('Module', function() {
+  // TODO: test input array, and 2d output array
   it('missing svg', function(done) {
     svgexport.render({
       "input" : resolve('missing.svg'),
@@ -40,6 +41,7 @@ describe('Module', function() {
 });
 
 describe('CLI', function() {
+  // TODO: test input/output path with space
   it('no arg', function(done) {
     cli([], {
       stderr : /^$/,

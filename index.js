@@ -14,8 +14,8 @@ function cli(args) {
 
   if (args.length > 1) {
     render({
-      input : args.shift(),
-      output : args.join(' '),
+      input : [ args.shift() ],
+      output : [ args ],
       base : process.cwd()
     }, process);
     return;
@@ -36,7 +36,6 @@ function cli(args) {
 }
 
 function render(data, done) {
-
   var stdio = done;
   var stdout = stdio && stdio.stdout ? function(data) {
     stdio.stdout.write(data);
@@ -74,13 +73,29 @@ function render(data, done) {
     var input = entry.src || entry.input;
     var outputs = entry.dest || entry.output;
 
-    input = input.split(/\s+/);
+    // TODO: Use /('[^']*'|"[^"]*"|[^"'\s])/ instead of split(/\s+/)
+
+    if (!Array.isArray(input)) {
+      input = input.split(/\s+/);
+    }
+
+    if (!Array.isArray(outputs)) {
+      // one string
+      outputs = [ outputs.split(/\s+/) ];
+
+    } else if (!outputs.some(function(output) {
+      return Array.isArray(output);
+    })) {
+      // array, but not 2d array
+      outputs = outputs.map(function(output) {
+        return output.split(/\s+/);
+      });
+    }
+
     input[0] = path.resolve(base, input[0]);
 
-    outputs = Array.isArray(outputs) ? outputs : [ outputs ];
     outputs.forEach(function(output) {
 
-      output = output.split(/\s+/);
       output[0] = path.resolve(base, output[0]);
 
       commands.push({
