@@ -1,3 +1,10 @@
+/*
+ * svgexport
+ * Copyright (c) 2015 Ali Shakiba
+ * Available under the MIT license
+ * @license
+ */
+
 var path = require('path');
 var fs = require('fs');
 var child_process = require('child_process');

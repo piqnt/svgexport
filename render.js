@@ -1,7 +1,15 @@
+/*
+ * svgexport
+ * Copyright (c) 2015 Ali Shakiba
+ * Available under the MIT license
+ * @license
+ */
+
 try {
   var webpage = require('webpage');
   var async = require('async');
   var system = require('system');
+  var resize = require('./resize');
 
   if (phantom.args.length !== 1) {
     exit('Error: Invalid commands!');
@@ -21,16 +29,21 @@ function exec(commands, done) {
   commands = Array.isArray(commands) ? commands : [ commands ];
   async.each(commands, function(cmd, done) {
     var page = webpage.create();
-    page.open(cmd.input[0], function(status) {
-
+    try {
+      var svgfile = cmd.input[0];
+      var imgfile = cmd.output[0];
+      var params = [].concat(cmd.input.slice(1), cmd.output.slice(1));
+    } catch (e) {
+      done && done(e);
+      return;
+    }
+    page.open(svgfile, function(status) {
       if (status !== 'success') {
-        var err = 'Error: Unable to load file (' + status + '): ' + cmd.input;
+        var err = 'Error: Unable to load file (' + status + '): ' + svgfile;
         done && done(err);
         return;
       }
-
       try {
-
         var viewbox = page.evaluate(function() {
           var el = document.documentElement;
           if (el.getAttribute('width') && el.getAttribute('height')) {
@@ -51,23 +64,21 @@ function exec(commands, done) {
             height : box.height
           };
         });
-
-        parse(cmd, viewbox);
-
-        page.clipRect = cmd;
-        page.zoomFactor = cmd.scale;
-
+        var output = resize.parse(viewbox, params, imgfile);
+        page.clipRect = output;
+        page.zoomFactor = output.scale;
       } catch (e) {
         done && done(e);
+        return;
       }
-
       setTimeout(function() {
         try {
-          page.render(cmd.output[0], {
-            format : cmd.format,
-            quality : cmd.quality
+          page.render(imgfile, {
+            format : output.format,
+            quality : output.quality
           });
-          system.stdout.writeLine(strcmd(cmd));
+          system.stdout.writeLine(svgfile + ' ' + imgfile + ' '
+              + output.toString());
           done && done();
         } catch (e) {
           done && done(e);
@@ -77,115 +88,4 @@ function exec(commands, done) {
   }, function(err) {
     done && done(err);
   });
-}
-
-function parse(cmd, box) {
-
-  var params = new Params([].concat(cmd.input, cmd.output));
-
-  cmd.scale = 1;
-  cmd.format = 'png';
-  cmd.quality = 100;
-
-  params.first(/^(\d+)\%$/i, function(match) {
-    cmd.quality = match[1];
-  });
-
-  params.first(/^(jpeg|jpg)$/i, function(match) {
-    cmd.format = match[1];
-  }, function() {
-    var ext = /.(jpeg|jpg)$/.exec(cmd.output[0]);
-    if (ext && ext[1]) {
-      cmd.format = ext[1];
-    }
-  });
-
-  cmd.format = cmd.format.toLowerCase().replace('jpg', 'jpeg');
-
-  params.last(/^([0-9.]+)x$/i, function(match) {
-    cmd.scale = match[1];
-
-  }) || params.last(/^(\d+):$/i, function(match) {
-    cmd.width = match[1];
-
-  }) || params.last(/^:(\d+)$/i, function(match) {
-    cmd.height = match[1];
-
-  }) || params.last(/^(\d+):(\d+)$/i, function(match) {
-    cmd.width = match[1];
-    cmd.height = match[2];
-  });
-
-  params.last(/^((-?\d+):(-?\d+):)?(\d+):(\d+)$/i, function(match) {
-    box = {
-      left : match[2] || 0,
-      top : match[3] || 0,
-      width : match[4],
-      height : match[5]
-    };
-  });
-
-  if (cmd.width && cmd.height) {
-    cmd.scale = Math.max(cmd.width / box.width, cmd.height / box.height);
-
-  } else if (cmd.width) {
-    cmd.scale = cmd.width / box.width;
-    cmd.height = box.height * cmd.scale;
-
-  } else if (cmd.height) {
-    cmd.scale = cmd.height / box.height;
-    cmd.width = box.width * cmd.scale;
-
-  } else {
-    cmd.height = box.height * cmd.scale;
-    cmd.width = box.width * cmd.scale;
-  }
-
-  cmd.left = box.left * cmd.scale + (box.width * cmd.scale - cmd.width) / 2;
-  cmd.top = box.top * cmd.scale + (box.height * cmd.scale - cmd.height) / 2;
-
-  return cmd;
-}
-
-function Params(params) {
-
-  this.first = function(regex, callback, fallback) {
-    for (var i = 0; i < params.length; i++) {
-      var param = params[i];
-      var match = regex.exec(param);
-      if (match) {
-        params.splice(i--, 1);
-        callback(match);
-        return true;
-      }
-    }
-    fallback && fallback();
-    return false;
-  };
-
-  this.last = function(regex, callback, fallback) {
-    for (var i = params.length - 1; i >= 0; i--) {
-      var param = params[i];
-      var match = regex.exec(param);
-      if (match) {
-        params.splice(i, 1);
-        callback(match);
-        return true;
-      }
-    }
-    fallback && fallback();
-    return false;
-  };
-}
-
-function strcmd(cmd) {
-  return cmd.input[0] + ' ' + cmd.output[0] + ' ' + cmd.format + ' '
-      + cmd.quality + '%' + ' ' + cmd.scale + 'x' + ' '
-      + strnum(cmd.left / cmd.scale) + ':' + strnum(cmd.top / cmd.scale) + ':'
-      + strnum(cmd.width / cmd.scale) + ':' + strnum(cmd.height / cmd.scale)
-      + ' ' + strnum(cmd.width) + ':' + strnum(cmd.height);
-}
-
-function strnum(n) {
-  return (n * 100 | 0) / 100;
 }

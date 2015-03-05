@@ -136,6 +136,8 @@ var output = {
       + ".*test.svg .*32-32.png png 100% 2x 0:0:16:16 32:32\n"
       + ".*test.svg .*64-32.png png 100% 4x 0:4:16:8 64:32\n"
       + ".*test.svg .*32-64.png png 100% 4x 4:0:8:16 32:64\n"
+      + ".*test.svg .*64-32-pad.png png 100% 2x -8:0:32:16 64:32\n"
+      + ".*test.svg .*32-64-pad.png png 100% 2x 0:-8:16:32 32:64\n"
       + ".*test.svg .*offset.png png 100% 4x 8:8:8:8 32:32\n"
       + ".*test.svg .*jpeg-low.jpg jpeg 1% 20x 0:0:16:16 320:320\n"
       + ".*test.svg .*jpeg-high.jpg jpeg 99% 20x 0:0:16:16 320:320\n"

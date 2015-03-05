@@ -14,7 +14,7 @@ Usage
 svgexport <input file> <output file> <options>
 svgexport <datafile>
 
-<options>        [<format>] [<quality>] [<input viewbox>] [<output size>]
+<options>        [<format>] [<quality>] [<input viewbox>] [<output size>] [<resize mode>]
 
 <format>         png|jpeg|jpg
                  If not specified, it will be inferred from output file extension or defaults to "png".
@@ -25,7 +25,10 @@ svgexport <datafile>
                  If input viewbox is not specified it will be inferred from input file.
                  
 <output size>    <scale>x|<width>:<height>|<width>:|:<height>
-                 If specified as width:height, viewbox will be centered and cropped to match output aspect ratio.
+                 If output size is specified as width:height, <resize mode> is used.
+
+<resize mode>    crop|pad
+                 Crop or pad input to match output aspect ratio, default mode is "crop".
 
 <datafile>       A JSON file with following content:
                  [ {

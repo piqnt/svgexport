@@ -8,6 +8,8 @@
     "exported/32-32.png 16:16 32:32",
     "exported/64-32.png 64:32",
     "exported/32-64.png 32:64",
+    "exported/64-32-pad.png pad 64:32",
+    "exported/32-64-pad.png pad 32:64",
     "exported/offset.png 8:8:8:8 32:32",
     "exported/jpeg-low.jpg 1% 320:320",
     "exported/jpeg-high.jpg 99% 320:320"
