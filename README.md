@@ -25,12 +25,12 @@ svgexport <datafile>
                  If input viewbox is not specified it will be inferred from input file.
                  
 <output size>    <scale>x|<width>:<height>|<width>:|:<height>
-                 If output size is specified as width:height, <resize mode> is used.
+                 If output size is specified as width:height, <viewbox mode> is used.
 
-<resize mode>    crop|pad
-                 Crop or pad input to match output aspect ratio, default mode is "crop".
+<viewbox mode>   crop|pad
+                 Crop (slice) or pad (extend) input to match output aspect ratio, default mode is "crop".
 
-<datafile>       A JSON file with following content:
+<datafile>       Path of a JSON file with following content:
                  [ {
                    "input" : "<input file> <options>",
                    "output": [ "<output file> <options>", ... ]
@@ -43,7 +43,7 @@ Examples
 ```
 svgexport input.svg output.png 1.5x
 svgexport input.svg output.png 54:
-svgexport input.svg output.png 32:54
+svgexport input.svg output.png pad 32:54
 svgexport input.svg output.png -1:-1:24:24 1x
 svgexport input.svg output.jpg 80% 24:24 48:64
 ```
