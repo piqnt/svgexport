@@ -32,7 +32,8 @@
   },
   "preferGlobal": "true",
   "devDependencies": {
-    "should": "^4.6.2"
+    "mocha": "*",
+    "should": "*"
   },
   "scripts": {
     "test": "mocha"
