@@ -8,6 +8,7 @@
 var path = require('path');
 var fs = require('fs');
 var child_process = require('child_process');
+var phantomjs = require('phantomjs');
 
 module.exports.render = render;
 module.exports.cli = cli;
@@ -113,9 +114,9 @@ function render(data, done) {
   });
 
   commands = JSON.stringify(commands);
-  var phantomjs = path.resolve(__dirname, 'node_modules/.bin/phantomjs');
+
   var renderjs = path.resolve(__dirname, 'render.js');
-  var cp = child_process.spawn(phantomjs, [ renderjs, commands ]);
+  var cp = child_process.spawn(phantomjs.path, [ renderjs, commands ]);
 
   var wait = 3, exit = 0, errors = [], callback = function() {
     if (--wait === 0) {
