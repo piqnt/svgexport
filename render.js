@@ -57,7 +57,6 @@ function exec(commands, done) {
           var box = el.getAttribute('viewBox') ? el.viewBox.animVal : el
               .getBBox();
           return {
-            more : el.getBBox(),
             left : box.x,
             top : box.y,
             width : box.width,

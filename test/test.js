@@ -7,11 +7,12 @@ var svgexport = require('../');
 // TODO: compare exported files
 
 describe('Module', function() {
+  this.timeout(5000);
   // TODO: test input array, and 2d output array
   it('missing svg', function(done) {
     svgexport.render({
       "input" : resolve('missing.svg'),
-      "output" : resolve('exported/missing.png')
+      "output" : resolve('exported', 'missing.png')
     }, function(err) {
       err.should.match(output.invalidsvg);
       done();
@@ -26,7 +27,7 @@ describe('Module', function() {
   it('test.svg', function(done) {
     svgexport.render({
       "input" : resolve('test.svg'),
-      "output" : resolve('exported/test.png')
+      "output" : resolve('exported', 'test.png')
     }, function(err) {
       err.should.not.be.ok;
       done();
@@ -41,6 +42,7 @@ describe('Module', function() {
 });
 
 describe('CLI', function() {
+  this.timeout(5000);
   // TODO: test input/output path with space
   it('no arg', function(done) {
     cli([], {
@@ -78,7 +80,7 @@ describe('CLI', function() {
     });
   });
   it('missing svg', function(done) {
-    cli([ 'missing.svg', 'exported/missing.png' ], {
+    cli([ 'missing.svg', p.join('exported', 'missing.png') ], {
       stderr : output.invalidsvg,
       stdout : /^$/,
       done : done
@@ -92,7 +94,7 @@ describe('CLI', function() {
     });
   });
   it('test.svg', function(done) {
-    cli([ 'test.svg', 'exported/test.png' ], {
+    cli([ 'test.svg', p.join('exported', 'test.png') ], {
       stderr : /^$/,
       stdout : output.testsvg,
       done : done
@@ -108,7 +110,7 @@ describe('CLI', function() {
 });
 
 function cli(args, done) {
-  child_process.execFile(resolve('../bin/index.js'), args, {
+  child_process.execFile(resolve('..', 'bin', 'index.js'), args, {
     cwd : __dirname
   }, function(err, stdout, stderr) {
     if (!err) {
@@ -119,8 +121,8 @@ function cli(args, done) {
   });
 }
 
-function resolve(name) {
-  return p.resolve(__dirname, name);
+function resolve() {
+  return p.resolve(__dirname, p.join.apply(p, arguments));
 }
 
 var output = {
