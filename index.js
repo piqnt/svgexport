@@ -24,7 +24,7 @@ function cli(args) {
     render({
       input : [ args.shift() ],
       output : [ args ],
-      base : process.cwd()
+      cwd : process.cwd()
     }, process);
     return;
   }
@@ -54,10 +54,10 @@ function render(data, done) {
 
   done = typeof done === 'function' ? done : noop;
 
-  var base;
+  var cwd;
   if (typeof data === 'string') {
     data = path.resolve(process.cwd(), data);
-    base = path.dirname(data);
+    cwd = path.dirname(data);
     try {
       data = require(data);
     } catch (e) {
@@ -66,11 +66,11 @@ function render(data, done) {
       return done(err);
     }
   } else {
-    base = data.base || process.cwd();
+    cwd = data.cwd || data.base || process.cwd();
   }
 
-  if (!base) {
-    base = process.cwd();
+  if (!cwd) {
+    cwd = process.cwd();
   }
 
   var commands = [];
@@ -100,11 +100,11 @@ function render(data, done) {
       });
     }
 
-    input[0] = path.resolve(base, input[0]);
+    input[0] = path.resolve(cwd, input[0]);
 
     outputs.forEach(function(output) {
 
-      output[0] = path.resolve(base, output[0]);
+      output[0] = path.resolve(cwd, output[0]);
 
       commands.push({
         input : input,
