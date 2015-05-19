@@ -64,6 +64,18 @@ function exec(commands, done) {
           };
         });
         var output = resize.parse(viewbox, params, imgfile);
+
+        if (output.css) {
+          page.evaluate(function(css) {
+            var style = document.createElementNS("http://www.w3.org/2000/svg",
+                "style");
+            style.setAttribute('type', 'text/css');
+            style.appendChild(document.createCDATASection(css));
+            var svg = document.documentElement;
+            svg.insertBefore(style, svg.firstChild);
+          }, output.css);
+        }
+
         page.clipRect = output;
         page.zoomFactor = output.scale;
       } catch (e) {

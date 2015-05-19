@@ -14,7 +14,7 @@ Usage
 svgexport <input file> <output file> <options>
 svgexport <datafile>
 
-<options>        [<format>] [<quality>] [<input viewbox>] [<output size>] [<resize mode>]
+<options>        [<format>] [<quality>] [<input viewbox>] [<output size>] [<resize mode>] [<styles>]
 
 <format>         png|jpeg|jpg
                  If not specified, it will be inferred from output file extension or defaults to "png".
@@ -46,6 +46,7 @@ svgexport input.svg output.png 54:
 svgexport input.svg output.png pad 32:54
 svgexport input.svg output.png -1:-1:24:24 1x
 svgexport input.svg output.jpg 80% 24:24 48:64
+svgexport input.svg output.jpg "svg { backgound: silver; }"
 ```
 
 #### Node Module

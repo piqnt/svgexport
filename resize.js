@@ -67,6 +67,10 @@ function parse(box, params, outputfile) {
     output.mode = 'pad';
   });
 
+  params.first(/^([^{}]+\s*\{[^{}]*\}\s*)+$/i, function(match) {
+    output.css = match[0];
+  });
+
   resize(box, output);
 
   return output;
