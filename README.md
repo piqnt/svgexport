@@ -46,7 +46,7 @@ svgexport input.svg output.png 54:
 svgexport input.svg output.png pad 32:54
 svgexport input.svg output.png -1:-1:24:24 1x
 svgexport input.svg output.jpg 80% 24:24 48:64
-svgexport input.svg output.jpg "svg { background: silver; }"
+svgexport input.svg output.jpg "svg{background:silver;}"
 ```
 
 #### Node Module
