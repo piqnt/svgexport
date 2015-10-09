@@ -37,5 +37,14 @@
   },
   "scripts": {
     "test": "mocha"
-  }
+  },
+  "files": [
+    "bin/",
+    "test/",
+    "package.json",
+    "README.md",
+    "render.js",
+    "resize.js",
+    "index.js"
+  ]
 }
