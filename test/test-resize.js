@@ -1,33 +1,43 @@
-var resize = require('../resize').resize;
-var should = require('should');
+var resize = require('../resize');
+var expect = require('expect.js');
 
-// TODO: rest resize.parse
-it('Resize', function() {
-  var output, input = {
-    width : 1,
-    height : 1
-  };
-  output = resize(input, {
-    width : 5
+describe('Resize', function() {
+  it('width', function() {
+    var output = resize({
+      width : 1,
+      height : 1
+    }, {
+      width : 5
+    });
+    expect(output.width).equal(5);
+    expect(output.height).equal(5);
+    expect(output.scale).equal(5);
   });
-  output.width.should.equal(5);
-  output.height.should.equal(5);
-  output.scale.should.equal(5);
 
-  output = resize(input, {
-    width : 5,
-    height : 2
+  it('both', function() {
+    var output = resize({
+      width : 1,
+      height : 1
+    }, {
+      width : 5,
+      height : 2
+    });
+    expect(output.width).equal(5);
+    expect(output.height).equal(2);
+    expect(output.scale).equal(5);
   });
-  output.width.should.equal(5);
-  output.height.should.equal(2);
-  output.scale.should.equal(5);
 
-  output = resize(input, {
-    width : 5,
-    height : 2,
-    mode : 'pad'
+  it('pad', function() {
+    var output = resize({
+      width : 1,
+      height : 1
+    }, {
+      width : 5,
+      height : 2,
+      mode : 'pad'
+    });
+    expect(output.width).equal(5);
+    expect(output.height).equal(2);
+    expect(output.scale).equal(2);
   });
-  output.width.should.equal(5);
-  output.height.should.equal(2);
-  output.scale.should.equal(2);
 });

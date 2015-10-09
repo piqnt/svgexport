@@ -39,13 +39,35 @@ svgexport <datafile>
                  Instead of a JSON file, a Node module which exports same content can be provided.
 ```
 
-Examples
+#### Examples
+
+Scale 1.5x proportionally:
 ```
 svgexport input.svg output.png 1.5x
-svgexport input.svg output.png 54:
+```
+
+Scale proportionally to set output width to 32px:
+```
+svgexport input.svg output.png 32:
+```
+
+Scale proportionally and pad output to set output width:height to 32px:54px:
+```
 svgexport input.svg output.png pad 32:54
+```
+
+Export `-1:-1:24:24` (`left:top:width:height`) of input.svg to output.png:
+```
 svgexport input.svg output.png -1:-1:24:24 1x
-svgexport input.svg output.jpg 80% 24:24 48:64
+```
+
+Set output JPEG quality:
+```
+svgexport input.svg output.jpg 80%
+```
+
+Use a CSS to style input SVG:
+```
 svgexport input.svg output.jpg "svg{background:silver;}"
 ```
 

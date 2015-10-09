@@ -1,6 +1,6 @@
 {
   "name": "svgexport",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "Node.js module and command-line tool for exporting SVG to PNG and JPEG.",
   "author": "Ali Shakiba",
   "keywords": [
@@ -33,7 +33,7 @@
   "preferGlobal": "true",
   "devDependencies": {
     "mocha": "*",
-    "should": "*"
+    "expect.js": "*"
   },
   "scripts": {
     "test": "mocha"

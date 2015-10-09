@@ -1,5 +1,5 @@
 [ {
-  "input" : "test.svg 16:16",
+  "input" : "svg/simple.svg",
   "output" : [
     "exported/32h.png :32",
     "exported/32w.png 32:",
@@ -15,11 +15,19 @@
     "exported/jpeg-high.jpg 99% 320:320"
   ]
 }, {
-  "input" : "test.svg -1:-1:18:18",
+  "input" : "svg/simple.svg -1:-1:18:18",
   "output" : [
     "exported/36h.png :36",
     "exported/36w.png 36:",
     "exported/2.5x18.png 2.5x",
     "exported/18-18.png"
+  ]
+}, {
+  "input" : "svg/viewbox.svg",
+  "output" : [
+    "exported/36h-vb.png :36",
+    "exported/36w-vb.png 36:",
+    "exported/2.5x18-vb.png 2.5x",
+    "exported/18-18-vb.png"
   ]
 } ]
