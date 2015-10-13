@@ -46,7 +46,9 @@ function exec(commands, done) {
       try {
         var input = page.evaluate(function() {
           var el = document.documentElement;
-          if (el.getAttribute('width') && el.getAttribute('height')) {
+          if ((function(width, height) {
+            return width && height && !/\%\s*$/.test(width) && !/\%\s*$/.test(height);
+          })(el.getAttribute('width'), el.getAttribute('height'))) {
             return {
               size : true,
               left : 0,
