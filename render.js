@@ -129,8 +129,8 @@ function exec(commands, done) {
 }
 
 function injectCSS(page, css) {
-  var ns = "http://www.w3.org/2000/svg";
   page.evaluate(function(css) {
+    var ns = "http://www.w3.org/2000/svg";
     var style = document.createElementNS(ns, "style");
     style.setAttribute('type', 'text/css');
     style.appendChild(document.createCDATASection(css));

@@ -32,8 +32,8 @@ svgexport <datafile>
 
 <datafile>       Path of a JSON file with following content:
                  [ {
-                   "input" : "<input file> <options>",
-                   "output": [ "<output file> <options>", ... ]
+                   "input" : ["<input file>", "<option>", "<option>", ...],
+                   "output": [ ["<output file>", "<option>", "<option>", ...] ]
                  }, ...]
                  Input file options are merged with and overridden by output file options.
                  Instead of a JSON file, a Node module which exports same content can be provided.
@@ -85,7 +85,6 @@ var svgexport = require('svgexport');
 
 svgexport.render(datafile, callback);
 ```
-`datafile` can be an object/array or a JSON file path, see command line usage for its format.
-
+`datafile` can be an object, an array of objects or a JSON file path, see command line usage for its format.
 
 *Keywords: svg, export, rasterize, converter, png, jpeg, jpg, cli, command-line, inkscape, illustrator, coreldraw*
