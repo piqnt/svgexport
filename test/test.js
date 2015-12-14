@@ -109,8 +109,8 @@ describe('CLI', function() {
       stderr : /^$/,
       done : function(err, stdout, stderr) {
         if (!err) {
-          expect(stdout.split(resolve('')).join('').split('\n')).eql(
-              output.testjson.split('\n'));
+          expect(stdout.split(resolve('')).join('').split('\n').sort()).eql(
+              output.testjson.split('\n').sort());
         }
         done(err);
       }
