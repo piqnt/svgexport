@@ -11,10 +11,11 @@ try {
   var system = require('system');
   var resize = require('./resize');
 
-  if (phantom.args.length !== 1) {
+  if (system.args.length !== 2) {
     exit('Error: Invalid commands!');
   }
-  exec(JSON.parse(phantom.args[0]), exit);
+
+  exec(JSON.parse(system.args[1]), exit);
 } catch (e) {
   exit(e);
 }
@@ -25,8 +26,10 @@ function exit(err) {
 }
 
 function exec(commands, done) {
-
+  // Make sure the commands var is an array.
   commands = Array.isArray(commands) ? commands : [ commands ];
+
+  // Run each command in parallel.
   async.each(commands, function(cmd, done) {
     var page = webpage.create();
     try {

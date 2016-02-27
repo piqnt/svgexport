@@ -8,7 +8,7 @@
 var path = require('path');
 var fs = require('fs');
 var child_process = require('child_process');
-var phantomjs = require('phantomjs');
+var phantomjs = require('phantomjs2');
 
 module.exports.render = render;
 module.exports.cli = cli;
