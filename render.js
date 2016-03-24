@@ -40,7 +40,7 @@ function exec(commands, done) {
       done && done(e);
       return;
     }
-    page.open(svgfile, function(status) {
+    page.open('file:///'+svgfile, function(status) {
       if (status !== 'success') {
         var err = 'Error: Unable to load file (' + status + '): ' + svgfile;
         done && done(err);
