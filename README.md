@@ -1,4 +1,18 @@
-# svgexport
+# svgexport 2 #
+
+This is a fork from the original svgexport module. This fixes the issue of 
+
+```
+Unable to load file (fail) : <your correct full absolute path to your file>
+```
+
+Do file an issue / a pull request if there are any feedbacks.
+
+----------
+
+# Below here is from the original svgexport module #
+
+## svgexport
 
 svgexport is a Node.js module and command-line tool for exporting SVG files to PNG and JPEG, it uses PhantomJS for rendering SVG files.
 

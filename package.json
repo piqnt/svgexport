@@ -1,8 +1,8 @@
 {
-  "name": "svgexport",
-  "version": "0.3.0",
-  "description": "Node.js module and command-line tool for exporting SVG to PNG and JPEG.",
-  "author": "Ali Shakiba",
+  "name": "svgexport2",
+  "version": "0.4.0",
+  "description": "A fork from the original svgexport module. This supports the latest PhantomJS upgarde. The original svgexport module states: This is a node.js module and command-line tool for exporting SVG to PNG and JPEG.",
+  "author": "Kiong",
   "keywords": [
     "svg",
     "export",
@@ -20,8 +20,9 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shakiba/svgexport.git"
+    "url": "https://github.com/tlkiong/svgexport.git"
   },
+  "bugs": "https://github.com/tlkiong/svgexport/issues",
   "dependencies": {
     "async": "^1.5.2",
     "phantomjs-prebuilt": "^2.1.4"
