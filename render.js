@@ -1,6 +1,6 @@
 /*
  * svgexport
- * Copyright (c) 2015 Ali Shakiba
+ * Copyright (c) 2016 Ali Shakiba
  * Available under the MIT license
  * @license
  */
@@ -49,9 +49,11 @@ function exec(commands, done) {
       try {
         var input = page.evaluate(function() {
           var el = document.documentElement;
-          if ((function(width, height) {
-            return width && height && !/\%\s*$/.test(width) && !/\%\s*$/.test(height);
-          })(el.getAttribute('width'), el.getAttribute('height'))) {
+          var widthAttr = el.getAttribute('width');
+          var heightAttr = el.getAttribute('height');
+          var viewBoxAttr = el.getAttribute('viewBox');
+          if (widthAttr && heightAttr && !/\%\s*$/.test(widthAttr)
+              && !/\%\s*$/.test(heightAttr)) {
             return {
               size : true,
               left : 0,
@@ -59,7 +61,7 @@ function exec(commands, done) {
               width : el.width.animVal.value,
               height : el.height.animVal.value
             };
-          } else if (el.getAttribute('viewBox')) {
+          } else if (viewBoxAttr && el.viewBox) {
             return {
               viewbox : true,
               left : el.viewBox.animVal.x,

@@ -87,4 +87,9 @@ svgexport.render(datafile, callback);
 ```
 `datafile` can be an object, an array of objects or a JSON file path, see command line usage for its format.
 
+### License
+
+Copyright (c) 2016 Ali Shakiba  
+Available under the MIT license
+
 *Keywords: svg, export, rasterize, converter, png, jpeg, jpg, cli, command-line, inkscape, illustrator, coreldraw*

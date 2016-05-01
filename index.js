@@ -1,6 +1,6 @@
 /*
  * svgexport
- * Copyright (c) 2015 Ali Shakiba
+ * Copyright (c) 2016 Ali Shakiba
  * Available under the MIT license
  * @license
  */
@@ -101,6 +101,11 @@ function render(data, done) {
     }
 
     input[0] = path.resolve(cwd, input[0]);
+
+    // temporary fix for phantomjs+windows
+    if (/^[a-z]\:\\/.test(input[0])) {
+      input[0] = 'file:///' + input[0];
+    }
 
     outputs.forEach(function(output) {
 
