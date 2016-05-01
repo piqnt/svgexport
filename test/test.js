@@ -139,8 +139,8 @@ function resolve() {
 var output = {
   help : /^\sUsage:/,
   invalidargs : /^Error: Invalid usage!\n?$/,
-  invalidsvg : /^Error: Unable to load file \(fail\): .*missing\.svg\n?$/,
-  invaliddata : /^Error: Invalid data file: .*missing\.json\n?$/,
+  invalidsvg : /^Error: Unable to load file \(fail\): .*missing\.svg\n*$/,
+  invaliddata : /^Error: Invalid data file: .*missing\.json\n*$/,
   testsvg : '/svg/simple.svg /exported/test.png png 100% 1x 0:0:16:16 16:16\n',
   testjson : '/svg/simple.svg /exported/32h.png png 100% 2x 0:0:16:16 32:32\n'
       + '/svg/simple.svg /exported/32w.png png 100% 2x 0:0:16:16 32:32\n'
