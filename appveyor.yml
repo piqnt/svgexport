@@ -16,10 +16,6 @@ environment:
 init:
   - git config --global core.autocrlf true
 
-platform:
-  - x86
-  - x64
-
 # Install scripts. (runs after repo cloning)
 install:
   # Get the latest stable version of Node.js or io.js
