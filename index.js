@@ -103,7 +103,7 @@ function render(data, done) {
     input[0] = path.resolve(cwd, input[0]);
 
     // temporary fix for phantomjs+windows
-    if (/^[a-z]\:\\/.test(input[0])) {
+    if (/^[a-z]\:\\/i.test(input[0])) {
       input[0] = 'file:///' + input[0];
     }
 
