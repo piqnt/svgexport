@@ -3,6 +3,9 @@
   "version": "0.3.2",
   "description": "Node.js module and command-line tool for exporting SVG to PNG and JPEG.",
   "author": "Ali Shakiba",
+  "contributors": [
+    { "name": "Maarten de Boer", "email": "maarten@cloudstek.nl", "url": "http://cloudstek.nl" }
+  ],
   "keywords": [
     "svg",
     "export",
@@ -24,7 +27,7 @@
   },
   "dependencies": {
     "async": "^1.0.0",
-    "phantomjs-prebuilt": "^2.1.4"
+    "phantomjs2": "^2.2.0"
   },
   "main": "index.js",
   "bin": {
@@ -32,8 +35,10 @@
   },
   "preferGlobal": "true",
   "devDependencies": {
-    "mocha": "*",
-    "expect.js": "*"
+    "eslint": "^3.19.0",
+    "eslint-config-xo": "^0.18.1",
+    "expect.js": "*",
+    "mocha": "*"
   },
   "scripts": {
     "test": "mocha"
