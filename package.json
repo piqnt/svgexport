@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "async": "^1.0.0",
-    "phantomjs-prebuilt": "^2.1.4"
+    "phantomjs2": "^2.2.0"
   },
   "main": "index.js",
   "bin": {
