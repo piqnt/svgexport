@@ -89,7 +89,7 @@ svgexport.render(datafile, callback);
 
 ### License
 
-Copyright (c) 2016 Ali Shakiba  
+Copyright (c) 2017 Ali Shakiba  
 Available under the MIT license
 
 *Keywords: svg, export, rasterize, converter, png, jpeg, jpg, cli, command-line, inkscape, illustrator, coreldraw*
