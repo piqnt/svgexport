@@ -104,7 +104,8 @@ function render(data, done) {
 
     // temporary fix for phantomjs+windows
     if (/^[a-z]\:\\/i.test(input[0])) {
-      input[0] = 'file:///' + input[0];
+      input[0] = input[0].replace(/\\/g, "/");
+      input[0] = 'file://' + input[0];
     }
 
     outputs.forEach(function(output) {
