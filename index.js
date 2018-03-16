@@ -105,7 +105,8 @@ function render(data, done) {
     // temporary fix for phantomjs+windows
     if (/^[a-z]\:\\/i.test(input[0])) {
       input[0] = input[0].replace(/\\/g, "/");
-      input[0] = 'file://' + input[0];
+      input[0] = 'file://' + input[0]; // three slash!!!
+      input[0] = encodeURI(input[0]); // for non-Engilish characters and white spaces
     }
 
     outputs.forEach(function(output) {
