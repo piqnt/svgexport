@@ -1,8 +1,11 @@
 {
-  "name": "svgexport",
-  "version": "0.3.2",
+  "name": "@michaelheerklotz/svgexport",
+  "version": "0.4.0",
   "description": "Node.js module and command-line tool for exporting SVG to PNG and JPEG.",
   "author": "Ali Shakiba",
+  "contributors": [
+    "Michael Heerklotz"
+  ],
   "keywords": [
     "svg",
     "export",
@@ -20,7 +23,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/shakiba/svgexport.git"
+    "url": "git+https://github.com/MichaelHeerklotz/svgexport.git"
   },
   "dependencies": {
     "async": "^3.1.0",
@@ -45,5 +48,12 @@
     "render.js",
     "resize.js",
     "index.js"
-  ]
+  ],
+  "bugs": {
+    "url": "https://github.com/MichaelHeerklotz/svgexport/issues"
+  },
+  "homepage": "https://github.com/MichaelHeerklotz/svgexport#readme",
+  "directories": {
+    "test": "test"
+  }
 }
