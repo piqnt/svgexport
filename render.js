@@ -27,15 +27,14 @@ async function renderSvg(commands, done, stdout) {
     var imgfile = cmd.output[0];
     var params = [].concat(cmd.input.slice(1), cmd.output.slice(1));
 
-    await Promise.all([
-      page.waitForNavigation({waitUntil: 'load'}),
-      page.goto('file://' + svgfile)
-    ]).catch(function(e) { 
-      throw 'Unable to load file (' + e + '): ' + svgfile;
-    });
-      
+    await page.goto('file://' + encodeURI(svgfile))
+      .catch(function(e) { 
+        throw 'Unable to load file (' + e + '): ' + svgfile;
+      }
+    );
+
     var input = await page.evaluate(function() {
-      
+
       var el = document.documentElement;
       var widthAttr = el.getAttribute('width');
       var heightAttr = el.getAttribute('height');
