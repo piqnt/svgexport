@@ -1,6 +1,6 @@
 # svgexport
 
-svgexport is a Node.js module and command-line tool for exporting SVG files to PNG and JPEG, it uses PhantomJS for rendering SVG files.
+svgexport is a Node.js module and command-line tool for exporting SVG files to PNG and JPEG, it uses Puppeteer for rendering SVG files.
 
 ### Command Line
 

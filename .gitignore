@@ -2,4 +2,4 @@
 /.project
 /node_modules/
 /npm-debug.log
-/exported
+/package-lock.json

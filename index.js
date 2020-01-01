@@ -7,8 +7,7 @@
 
 var path = require('path');
 var fs = require('fs');
-var child_process = require('child_process');
-var phantomjs = require('phantomjs-prebuilt');
+var renderImpl = require('./render');
 
 module.exports.render = render;
 module.exports.cli = cli;
@@ -43,16 +42,23 @@ function cli(args) {
   console.error('Error: Invalid usage!');
 }
 
-function render(data, done) {
+async function render(data, done) {
+
   var stdio = done;
+
   var stdout = stdio && stdio.stdout ? function(data) {
     stdio.stdout.write(data);
   } : noop;
+
   var stderr = stdio && stdio.stderr ? function(data) {
     stdio.stderr.write(data);
   } : noop;
 
-  done = typeof done === 'function' ? done : noop;
+  done = typeof done === 'function' ? done : function(err) {
+    if (err) {
+      stderr(err);
+    }
+  };
 
   var cwd;
   if (typeof data === 'string') {
@@ -61,9 +67,7 @@ function render(data, done) {
     try {
       data = require(data);
     } catch (e) {
-      var err = 'Error: Invalid data file: ' + data + '\n';
-      stderr(err);
-      return done(err);
+      return done('Error: Invalid data file: ' + data + '\n');
     }
   } else {
     cwd = data.cwd || data.base || process.cwd();
@@ -102,11 +106,6 @@ function render(data, done) {
 
     input[0] = path.resolve(cwd, input[0]);
 
-    // temporary fix for phantomjs+windows
-    if (/^[a-z]\:\\/i.test(input[0])) {
-      input[0] = 'file:///' + input[0];
-    }
-
     outputs.forEach(function(output) {
 
       output[0] = path.resolve(cwd, output[0]);
@@ -118,34 +117,7 @@ function render(data, done) {
     });
   });
 
-  commands = JSON.stringify(commands);
-
-  var renderjs = path.resolve(__dirname, 'render.js');
-  var cp = child_process.spawn(phantomjs.path, [ renderjs, commands ]);
-
-  var wait = 3, exit = 0, errors = [], callback = function() {
-    if (--wait === 0) {
-      done(exit && errors.join('\n'));
-    }
-  };
-
-  cp.stdout.on('data', function(data) {
-    stdout(data);
-  });
-  cp.stderr.on('data', function(data) {
-    errors.push(data.toString());
-    stderr(data);
-  });
-  cp.stdout.on('end', function() {
-    callback();
-  });
-  cp.stderr.on('end', function() {
-    callback();
-  });
-  cp.on('exit', function(code) {
-    exit = code;
-    callback();
-  });
+  await renderImpl.renderSvg(commands, done, stdout);
 }
 
 function noop() {
