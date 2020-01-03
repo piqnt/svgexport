@@ -87,9 +87,9 @@ svgexport.render(datafile, callback);
 ```
 `datafile` can be an object, an array of objects or a JSON file path, see command line usage for its format.
 
-### Contributor
+### Contributors
 
-svgexport was update from PhantomJS to Puppeteer by [Michael Heerklotz](https://github.com/MichaelHeerklotz).
+svgexport was migrated from PhantomJS to Puppeteer by [Michael Heerklotz](https://github.com/MichaelHeerklotz).
 
 ### License
 
