@@ -30,4 +30,12 @@
     "exported/2.5x18-vb.png 2.5x",
     "exported/18-18-vb.png"
   ]
+}, {
+  "input" : "svg/viewbox-with-width-height.svg",
+  "output" : [
+    "exported/36h-vb-wh.png :36",
+    "exported/36w-vb-wh.png 36:",
+    "exported/2.5x40-vb-wh.png 2.5x",
+    "exported/40-40-vb-wh.png"
+  ]
 } ]

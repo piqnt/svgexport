@@ -162,4 +162,8 @@ var output = {
       + '/svg/viewbox.svg /exported/36w-vb.png png 100% 2x -1:-1:18:18 36:36\n'
       + '/svg/viewbox.svg /exported/2.5x18-vb.png png 100% 2.5x -1:-1:18:18 45:45\n'
       + '/svg/viewbox.svg /exported/18-18-vb.png png 100% 1x -1:-1:18:18 18:18\n'
+      + '/svg/viewbox-with-width-height.svg /exported/36h-vb-wh.png png 100% 0.9x 0:0:40:40 36:36\n'
+      + '/svg/viewbox-with-width-height.svg /exported/36w-vb-wh.png png 100% 0.9x 0:0:40:40 36:36\n'
+      + '/svg/viewbox-with-width-height.svg /exported/2.5x40-vb-wh.png png 100% 2.5x 0:0:40:40 100:100\n'
+      + '/svg/viewbox-with-width-height.svg /exported/40-40-vb-wh.png png 100% 1x 0:0:40:40 40:40\n'
 };
