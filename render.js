@@ -84,7 +84,7 @@ async function renderSvg(commands, done, stdout) {
 
       var svg = document.getElementsByTagName('svg')[0];
 
-      if (!input.viewbox) {
+      if (!input.viewbox && !svg.getAttribute('viewBox')) {
         svg.setAttribute('viewBox', '0 0 ' + input.width + ' ' + input.height);
         svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       }
