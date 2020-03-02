@@ -71,7 +71,7 @@ Use a CSS to style input SVG:
 svgexport input.svg output.jpg "svg{background:silver;}"
 ```
 
-By default, Puppetteer has a page load timeout of 30 seconds. This might not be
+By default, Puppeteer has a page load timeout of 30 seconds. This might not be
 enough for large SVG files. If you want to change the page timeout, set the
 `TIMEOUT` environment variable to the desired number of seconds.
 ```bash
