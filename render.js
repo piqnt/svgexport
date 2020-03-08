@@ -23,8 +23,8 @@ async function renderSvg(commands, done, stdout) {
 
     var page = await browser.newPage();
 
-    if (process.env.TIMEOUT) {
-      await page.setDefaultNavigationTimeout(Number(process.env.TIMEOUT) * 1000);
+    if (process.env.SVGEXPORT_TIMEOUT) {
+      await page.setDefaultNavigationTimeout(Number(process.env.SVGEXPORT_TIMEOUT) * 1000);
     }
 
     var svgfile = cmd.input[0];
