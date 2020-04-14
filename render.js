@@ -114,15 +114,20 @@ async function renderSvg(commands, done, stdout) {
         svg.style.setProperty('top', 0, 'important');
       }
 
+      if (clip.x > 0 && clip.y > 0) {
+        svg.style.setProperty('transform', `translateX(${-clip.x}px) translateY(${-clip.y}px)`, 'important');
+      } else if (clip.x > 0) {
+        svg.style.setProperty('transform', `translateX(${-clip.x}px)`, 'important');
+      } else if (clip.y > 0) {
+        svg.style.setProperty('transform', `translateY(${-clip.y}px)`, 'important');
+      }
+
       svg.style.setProperty('width', (input.width * output.scale) + 'px', 'important');
       svg.style.setProperty('height', (input.height * output.scale) + 'px',  'important');
 
     }, input, output, clip);
 
     var svgContent = await page.content();
-
-    clip.x = Math.max(clip.x, 0);
-    clip.y = Math.max(clip.y, 0);
 
     var renderContent = `
       <!DOCTYPE html>
@@ -142,8 +147,8 @@ async function renderSvg(commands, done, stdout) {
             border: 0 !important;
             padding: 0 !important;
             position: fixed !important;
-            left: ${clip.x}px !important;
-            top: ${clip.y}px !important;
+            left: 0 !important;
+            top: 0 !important;
             width: ${output.width}px !important;
             height: ${output.height}px !important;
             "
@@ -167,7 +172,18 @@ async function renderSvg(commands, done, stdout) {
     }
 
     var outputEl = await page.$('#svgExportOutput-fa5ce2b6d16510');
-    await outputEl.screenshot(renderSettings);
+    if (output.format === 'pdf') {
+      await page.emulateMediaType('screen');
+      await page.pdf({
+        path: imgfile,
+        displayHeaderFooter: false,
+        width: `${output.width}px`,
+        height: `${output.height}px`,
+        printBackground: false
+      });
+    } else {
+      await outputEl.screenshot(renderSettings);
+    }
 
     stdout(svgfile + ' ' + imgfile + ' ' + output.toString() + '\n');
 
@@ -208,6 +224,17 @@ function Command(input, params, outputfile) {
   }, function() {
     if (outputfile) {
       var ext = /.(jpeg|jpg)$/.exec(outputfile);
+      if (ext && ext[1]) {
+        output.format = ext[1];
+      }
+    }
+  });
+
+  params.first(/^(pdf)$/i, function(match) {
+    output.format = match[1];
+  }, function() {
+    if (outputfile) {
+      var ext = /.(pdf)$/.exec(outputfile);
       if (ext && ext[1]) {
         output.format = ext[1];
       }

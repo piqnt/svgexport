@@ -7,7 +7,7 @@ var svgexport = require('../');
 // TODO: compare exported files
 
 describe('Module', function() {
-  this.timeout(5000);
+  this.timeout(10000);
   // TODO: test input array, and 2d output array
   it('missing svg', function(done) {
     svgexport.render({
@@ -42,7 +42,7 @@ describe('Module', function() {
 });
 
 describe('CLI', function() {
-  this.timeout(5000);
+  this.timeout(10000);
   // TODO: test input/output path with space
   it('no arg', function(done) {
     cli([], {
@@ -152,6 +152,10 @@ var output = {
       + '/svg/simple.svg /exported/64-32-pad.png png 100% 2x -8:0:32:16 64:32\n'
       + '/svg/simple.svg /exported/32-64-pad.png png 100% 2x 0:-8:16:32 32:64\n'
       + '/svg/simple.svg /exported/offset.png png 100% 4x 8:8:8:8 32:32\n'
+      + '/svg/simple.svg /exported/32-64-pad.pdf pdf 100% 2x 0:-8:16:32 32:64\n'
+      + '/svg/simple.svg /exported/64-32-pad.pdf pdf 100% 2x -8:0:32:16 64:32\n'
+      + '/svg/simple.svg /exported/offset.pdf pdf 100% 4x 8:8:8:8 32:32\n'
+      + '/svg/simple.svg /exported/simple.pdf pdf 100% 1x 0:0:16:16 16:16\n'
       + '/svg/simple.svg /exported/jpeg-low.jpg jpeg 1% 20x 0:0:16:16 320:320\n'
       + '/svg/simple.svg /exported/jpeg-high.jpg jpeg 99% 20x 0:0:16:16 320:320\n'
       + '/svg/simple.svg /exported/36h.png png 100% 2x -1:-1:18:18 36:36\n'

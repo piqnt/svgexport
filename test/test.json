@@ -11,6 +11,10 @@
     "exported/64-32-pad.png pad 64:32",
     "exported/32-64-pad.png pad 32:64",
     "exported/offset.png 8:8:8:8 32:32",
+    "exported/64-32-pad.pdf pad 64:32",
+    "exported/32-64-pad.pdf pad 32:64",
+    "exported/offset.pdf 8:8:8:8 32:32",
+    "exported/simple.pdf",
     "exported/jpeg-low.jpg 1% 320:320",
     "exported/jpeg-high.jpg 99% 320:320"
   ]

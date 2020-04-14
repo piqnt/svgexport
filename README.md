@@ -1,6 +1,8 @@
 # svgexport
 
-svgexport is a Node.js module and command-line tool for exporting SVG files to PNG and JPEG, it uses Puppeteer for rendering SVG files.
+svgexport is a Node.js module and command-line tool for exporting SVG files to PNG, JPEG, and PDF.
+
+It uses Puppeteer for rendering SVG files.
 
 ### Command Line
 
@@ -16,7 +18,7 @@ svgexport <datafile>
 
 <options>        [<format>] [<quality>] [<input viewbox>] [<output size>] [<resize mode>] [<styles>]
 
-<format>         png|jpeg|jpg
+<format>         png|jpeg|jpg|pdf
                  If not specified, it will be inferred from output file extension or defaults to "png".
                  
 <quality>        1%-100%
@@ -71,6 +73,11 @@ Use a CSS to style input SVG:
 svgexport input.svg output.jpg "svg{background:silver;}"
 ```
 
+Export a PDF:
+```
+svgexport input.svg output.pdf
+```
+
 By default, Puppeteer has a page load timeout of 30 seconds. This might not be
 enough for large SVG files. If you want to change the page timeout, set the
 `SVGEXPORT_TIMEOUT` environment variable to the desired number of seconds.
@@ -104,4 +111,4 @@ svgexport was migrated from PhantomJS to Puppeteer by [Michael Heerklotz](https:
 Copyright (c) 2016 Ali Shakiba  
 Available under the MIT license
 
-*Keywords: svg, export, rasterize, converter, png, jpeg, jpg, cli, command-line, inkscape, illustrator, coreldraw*
+*Keywords: svg, export, rasterize, converter, png, jpeg, jpg, pdf, cli, command-line, inkscape, illustrator, coreldraw*
