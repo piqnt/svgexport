@@ -26,8 +26,8 @@
     "url": "https://github.com/shakiba/svgexport.git"
   },
   "dependencies": {
-    "async": "^3.1.0",
-    "puppeteer": "^2.0.0"
+    "async": "^3.2.0",
+    "puppeteer": "^3.0.2"
   },
   "main": "index.js",
   "bin": {
