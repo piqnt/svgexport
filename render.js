@@ -7,6 +7,7 @@
 
 var puppeteer = require("puppeteer");
 var async = require('async');
+var path = require('path');
 var resize = require('./resize');
 
 module.exports.renderSvg = renderSvg;
@@ -27,12 +28,14 @@ async function renderSvg(commands, done, stdout) {
       await page.setDefaultNavigationTimeout(Number(process.env.SVGEXPORT_TIMEOUT) * 1000);
     }
 
-    var svgfile = cmd.input[0];
+    var svgfile = cmd.input[0].split(path.sep)
+      .map((pathPart) => encodeURI(pathPart))
+      .join(path.sep);
     var imgfile = cmd.output[0];
     var params = [].concat(cmd.input.slice(1), cmd.output.slice(1));
 
-    await page.goto('file://' + encodeURI(svgfile))
-      .catch(function(e) { 
+    await page.goto('file://' + svgfile)
+      .catch(function(e) {
         throw 'Unable to load file (' + e + '): ' + svgfile;
       }
     );
@@ -130,7 +133,7 @@ async function renderSvg(commands, done, stdout) {
         <head>
           <title>svg</title>
         </head>
-        <body 
+        <body
           style="
             margin: 0 !important;
             border: 0 !important;
