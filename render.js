@@ -16,7 +16,10 @@ async function renderSvg(commands, done, stdout) {
   // Make sure the commands var is an array.
   commands = Array.isArray(commands) ? commands : [ commands ];
 
-  var browser = await puppeteer.launch();
+  var browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox']
+  });
 
   // Run each command in parallel.
   await async.each(commands, async function(cmd) {
