@@ -34,7 +34,7 @@ async function renderSvg(commands, done, stdout) {
     var imgfile = cmd.output[0];
     var params = [].concat(cmd.input.slice(1), cmd.output.slice(1));
 
-    await page.goto('file://' + encodeURI(svgfile))
+    await page.goto(encodeURI(String(new URL(`file://${svgfile}`))))
       .catch(function(e) { 
         throw 'Unable to load file (' + e + '): ' + svgfile;
       }
