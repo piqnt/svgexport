@@ -11,7 +11,7 @@ npm install svgexport -g
 
 #### Usage
 ```usage
-svgexport <input file> <output file> <options>
+svgexport <input file or data:url> <output file> <options>
 svgexport <datafile>
 
 <options>        [<format>] [<quality>] [<input viewbox>] [<output size>] [<resize mode>] [<styles>]
@@ -32,7 +32,7 @@ svgexport <datafile>
 
 <datafile>       Path of a JSON file with following content:
                  [ {
-                   "input" : ["<input file>", "<option>", "<option>", ...],
+                   "input" : ["<input file or data:url>", "<option>", "<option>", ...],
                    "output": [ ["<output file>", "<option>", "<option>", ...] ]
                  }, ...]
                  Input file options are merged with and overridden by output file options.

@@ -87,8 +87,13 @@ async function render(data, done) {
 
     // TODO: Use /('[^']*'|"[^"]*"|[^"'\s])/ instead of split(/\s+/)
 
-    if (!Array.isArray(input)) {
-      input = input.split(/\s+/);
+    if (input != null) {
+      if (!Array.isArray(input)) {
+        input = input.split(/\s+/);
+      }
+      if (!input[0].startsWith("data:")) {
+        input[0] = path.resolve(cwd, input[0]);
+      }
     }
 
     if (!Array.isArray(outputs)) {
@@ -103,8 +108,6 @@ async function render(data, done) {
         return output.split(/\s+/);
       });
     }
-
-    input[0] = path.resolve(cwd, input[0]);
 
     outputs.forEach(function(output) {
 
