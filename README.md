@@ -9,6 +9,15 @@ svgexport is a Node.js module and command-line tool for exporting SVG files to P
 npm install svgexport -g
 ```
 
+## Installation Issues
+You might encounter an error while installing because of a puppeteer issue documented here
+[puppeteer/puppeteer#367](https://github.com/puppeteer/puppeteer/issues/367)
+
+To circumvent this, you will need the following command
+```
+sudo npm install -g svgexport --unsafe-perm=true
+```
+
 #### Usage
 ```usage
 svgexport <input file> <output file> <options>
@@ -18,12 +27,12 @@ svgexport <datafile>
 
 <format>         png|jpeg|jpg
                  If not specified, it will be inferred from output file extension or defaults to "png".
-                 
+
 <quality>        1%-100%
 
 <input viewbox>  <left>:<top>:<width>:<height>|<width>:<height>
                  If input viewbox is not specified it will be inferred from input file.
-                 
+
 <output size>    <scale>x|<width>:<height>|<width>:|:<height>
                  If output size is specified as width:height, <viewbox mode> is used.
 
@@ -101,7 +110,7 @@ svgexport was migrated from PhantomJS to Puppeteer by [Michael Heerklotz](https:
 
 ### License
 
-Copyright (c) 2016 Ali Shakiba  
+Copyright (c) 2016 Ali Shakiba
 Available under the MIT license
 
 *Keywords: svg, export, rasterize, converter, png, jpeg, jpg, cli, command-line, inkscape, illustrator, coreldraw*
