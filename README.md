@@ -9,7 +9,7 @@ svgexport is a Node.js module and command-line tool for exporting SVG files to P
 npm install svgexport -g
 ```
 
-## Installation Issues
+### Installation Issues
 You might encounter an error while installing because of a puppeteer issue documented here
 [puppeteer/puppeteer#367](https://github.com/puppeteer/puppeteer/issues/367)
 
