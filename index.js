@@ -12,7 +12,7 @@ var renderImpl = require('./render');
 module.exports.render = render;
 module.exports.cli = cli;
 
-function cli(args) {
+async function cli(args) {
 
   if (args.length === 1 && /.(js|json)$/i.test(args[0])) {
     render(path.resolve(process.cwd(), args.shift()), process);
@@ -20,12 +20,11 @@ function cli(args) {
   }
 
   if (args.length > 1) {
-    render({
+    return render({
       input : [ args.shift() ],
       output : [ args ],
       cwd : process.cwd()
     }, process);
-    return;
   }
 
   if (!args.length || (args.length === 1 && /(-h|--help|help)$/i.test(args[0]))) {
