@@ -85,22 +85,22 @@ async function render(data, done) {
     var input = entry.src || entry.input;
     var outputs = entry.dest || entry.output;
 
-    // TODO: Use /('[^']*'|"[^"]*"|[^"'\s])/ instead of split(/\s+/)
+    var splitParams = ( value => value.match(/\w+|"[^"]+"|'[^']+'/g).map(v=>v.replace(/"([^"]+)"|'([^']+)'/g,"$1$2")) ); //Split on non-word characters unless wrapped in single or double quotes, then remove wrapping single and double quotes
 
     if (!Array.isArray(input)) {
-      input = input.split(/\s+/);
+      input = splitParams(input);
     }
 
     if (!Array.isArray(outputs)) {
       // one string
-      outputs = [ outputs.split(/\s+/) ];
+      outputs = [ splitParams(outputs) ];
 
     } else if (!outputs.some(function(output) {
       return Array.isArray(output);
     })) {
       // array, but not 2d array
       outputs = outputs.map(function(output) {
-        return output.split(/\s+/);
+        return splitParams(output);
       });
     }
 
