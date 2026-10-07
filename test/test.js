@@ -33,6 +33,15 @@ describe('Module', function() {
       done();
     });
   });
+  it('trans.svg data url', function(done) {
+    svgexport.render({
+      'input' : "data:image/svg+xml;charset=UTF-8,%3c?xml version='1.0' encoding='UTF-8' standalone='no'?%3e%3csvg xmlns:svg='http://www.w3.org/2000/svg' xmlns='http://www.w3.org/2000/svg' version='1.1' width='16' height='16'%3e%3crect width='12' height='2' x='2' y='0' style='fill:red;fill-opacity:1;stroke:none' /%3e%3crect width='12' height='2' x='2' y='14' style='fill:green;fill-opacity:1;stroke:none' /%3e%3crect width='2' height='12' x='0' y='2' style='fill:blue;fill-opacity:1;stroke:none' /%3e%3crect width='2' height='12' x='14' y='2' style='fill:yellow;fill-opacity:1;stroke:none' /%3e%3crect width='2' height='2' x='7' y='7' style='fill:gray;fill-opacity:1;stroke:none' /%3e%3crect width='1' height='1' x='7.5' y='7.5' style='fill:white;fill-opacity:1;stroke:none' /%3e%3c/svg%3e",
+      'output' : resolve('exported', 'trans-svg-from-data-url.png')
+    }, function(err) {
+      expect(err).not.be.ok;
+      done();
+    });
+  });
   it('test.json', function(done) {
     svgexport.render(resolve('test.json'), function(err) {
       expect(err).not.be.ok;

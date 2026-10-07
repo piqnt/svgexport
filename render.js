@@ -31,13 +31,21 @@ async function renderSvg(commands, done, stdout) {
       await page.setDefaultNavigationTimeout(Number(process.env.SVGEXPORT_TIMEOUT) * 1000);
     }
 
-    var svgfile = cmd.input[0].split(path.sep)
-      .map((pathPart) => encodeURI(pathPart))
-      .join(path.sep);
+    var svgfile, svgurl;
+    if (cmd.input[0].startsWith('data:')) {
+      svgfile = 'SVG Data URL';
+      svgurl = cmd.input[0];
+    }
+    else {
+      svgfile = cmd.input[0].split(path.sep)
+          .map((pathPart) => encodeURI(pathPart))
+          .join(path.sep);
+      svgurl = 'file://' + svgfile;
+    }
     var imgfile = cmd.output[0];
     var params = [].concat(cmd.input.slice(1), cmd.output.slice(1));
 
-    await page.goto('file://' + svgfile)
+    await page.goto(svgurl)
       .catch(function(e) {
         throw 'Unable to load file (' + e + '): ' + svgfile;
       }
